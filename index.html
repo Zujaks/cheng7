@@ -593,13 +593,31 @@ nav button{height:52px; border-radius:26px; box-shadow:none}
   -webkit-backdrop-filter:blur(5px) saturate(104%);
   color:color-mix(in srgb,var(--ink) 74%,transparent);
 }
-</style>
 
+/* ===== 상단 컨트롤에 메뉴·별·공식·설정 통합 (하단 원형 버튼 폐기) ===== */
+#ctrls{flex-wrap:wrap; row-gap:8px}
+#sortSeg{flex:none}
+#navSeg{flex:none; margin-left:auto}
+#navSeg button{display:flex; align-items:center; gap:5px; padding:6px 9px}
+#navSeg button i{width:17px; height:17px; flex:none; display:block}
+#navSeg button i svg{width:100%; height:100%; display:block}
+#navSeg button .n{margin-left:0; font-variant-numeric:tabular-nums}
+#navSeg button.on i svg{stroke-width:2.1}
+
+/* 하단에 떠 있던 원형 탭은 제거 */
+.tabs2{display:none !important}
+
+/* 풀이 머리줄 제거 — 닫기 버튼은 '풀이 닫기' 하나로 충분 */
+.s-h{display:none}
+.s{padding-top:16px}
+/* 상세 페이지 — 몇 번 문제인지 또렷하게 */
+h1 small.pn{color:var(--accent); font-weight:600; letter-spacing:.1em; opacity:1}
+</style>
+</head>
+<body>
 <div id="photo" aria-hidden="true"></div>
 <div id="scrim" aria-hidden="true"></div>
 
-</head>
-<body>
 <header>
   <div class="hrow">
     <button class="back" id="back" type="button">&#8249;&nbsp;목록</button>
@@ -1431,12 +1449,6 @@ nav button{height:52px; border-radius:26px; box-shadow:none}
 </main>
 
 <div id="bottombar">
-  <div class="tabs2" id="tabs2">
-    <button type="button" data-v="list" aria-label="문제 목록" title="문제 목록"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></i><span>문제</span></button>
-    <button type="button" data-v="imp" aria-label="중요 표시" title="중요 표시"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.78L12 16.9l-5.2 2.73 1-5.78-4.2-4.1 5.8-.85z"/></svg></i><span>중요</span></button>
-    <button type="button" data-v="guide" aria-label="공식 정리" title="공식 정리"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6.5l6 8-6 8H18"/></svg></i><span>공식</span></button>
-    <button type="button" data-v="set" aria-label="설정" title="설정"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.3M12 18.9v2.3M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg></i><span>설정</span></button>
-  </div>
   <nav id="navbar2">
     <button class="nav-side" id="prev" type="button" aria-label="이전 문제">&#8249;</button>
     <button class="nav-mark" id="mark" type="button"><span class="dot"></span><span id="markt">복습 완료</span></button>
@@ -1482,7 +1494,6 @@ var markEl=document.getElementById('mark');
 var marktEl=document.getElementById('markt');
 var guideEl=document.getElementById('guide');
 var mainEl=document.querySelector('main');
-var tabsEl=document.getElementById('tabs2');
 var navEl=document.getElementById('navbar2');
 var cur=-1, typeset={};
 
@@ -1497,7 +1508,7 @@ function sj(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var tags=lj(TKEY,{});
 var sess=lj(SKEY,{});
 var sortMode=sess.sort||'group';
-var filtMode=sess.filt||'all';
+var filtMode=(sess.filt==='imp')?'imp':'all';
 var ctrlEl=document.getElementById('ctrls');
 var setEl=document.getElementById('settings');
 
@@ -1620,7 +1631,6 @@ function counts(){
 function passes(a){
   var n=a.dataset.n, t=tg(n);
   if(filtMode==='imp')  return !!t.imp;
-  if(filtMode==='todo') return !done[n];
   return true;
 }
 function saveSess(extra){
@@ -1630,6 +1640,15 @@ function saveSess(extra){
   sess=o; sj(SKEY,o);
 }
 
+/* ---- 아이콘 (기호만, 한글 라벨 없음) ---- */
+var IC={
+ list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.78L12 16.9l-5.2 2.73 1-5.78-4.2-4.1 5.8-.85z"/></svg>',
+ sum :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6.5l6 8-6 8H18"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.3M12 18.9v2.3M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg>'
+};
+var curView='list';
+
 /* ---- 컨트롤 바 ---- */
 function buildCtrls(){
   var c=counts();
@@ -1638,19 +1657,26 @@ function buildCtrls(){
       '<button type="button" data-s="group">주제별</button>'+
       '<button type="button" data-s="num">번호순</button>'+
     '</div>'+
-    '<div class="seg" id="filtSeg">'+
-      '<button type="button" data-f="all">전체<span class="n">'+c.all+'</span></button>'+
-      '<button type="button" data-f="imp">★<span class="n">'+c.imp+'</span></button>'+
-      '<button type="button" data-f="todo">미완료<span class="n">'+c.todo+'</span></button>'+
+    '<div class="seg" id="navSeg">'+
+      '<button type="button" data-v="list" aria-label="문제 목록" title="문제 목록">'+
+        '<i>'+IC.list+'</i><span class="n">'+c.all+'</span></button>'+
+      '<button type="button" data-v="imp" aria-label="중요 표시" title="중요 표시">'+
+        '<i>'+IC.star+'</i><span class="n">'+c.imp+'</span></button>'+
+      '<button type="button" data-v="guide" aria-label="공식 정리" title="공식 정리">'+
+        '<i>'+IC.sum+'</i></button>'+
+      '<button type="button" data-v="set" aria-label="설정" title="설정">'+
+        '<i>'+IC.gear+'</i></button>'+
     '</div>';
   [].forEach.call(ctrlEl.querySelectorAll('#sortSeg button'),function(b){
     b.classList.toggle('on',b.dataset.s===sortMode);
     b.addEventListener('click',function(){ sortMode=b.dataset.s; saveSess(); buildList(); });
   });
-  [].forEach.call(ctrlEl.querySelectorAll('#filtSeg button'),function(b){
-    b.classList.toggle('on',b.dataset.f===filtMode);
-    b.addEventListener('click',function(){ filtMode=b.dataset.f; saveSess(); buildList(); });
+  [].forEach.call(ctrlEl.querySelectorAll('#navSeg button'),function(b){
+    b.classList.toggle('on',b.dataset.v===curView);
+    b.addEventListener('click',function(){ view(b.dataset.v); });
   });
+  var ss=ctrlEl.querySelector('#sortSeg');
+  if(ss) ss.style.display=(curView==='list'||curView==='imp')?'flex':'none';
 }
 
 /* ---- 한 줄 ---- */
@@ -1724,7 +1750,7 @@ function open(i){
   setEl.classList.remove('on');
   guideEl.classList.remove('on');
   setBars(true);
-  ttlEl.innerHTML='<small>Cheng &middot; Problem</small>'+a.dataset.t;
+  ttlEl.innerHTML='<small class="pn">Cheng &middot; P.'+a.dataset.n+'</small>'+a.dataset.t;
   saveSess({view:'detail',cur:i,scroll:0});
   prevEl.disabled=(i===0); nextEl.disabled=(i===arts.length-1);
   syncMark();
@@ -1776,7 +1802,8 @@ arts.forEach(function(a){
     if(opening) sol.scrollIntoView({block:'nearest',behavior:'smooth'});
     else a.scrollIntoView({block:'start',behavior:'smooth'});
   });
-  a.querySelector('.hide').addEventListener('click',function(){
+  var hb=a.querySelector('.hide');
+  if(hb) hb.addEventListener('click',function(){
     set(false); a.scrollIntoView({block:'start',behavior:'smooth'});
   });
 });
@@ -1784,11 +1811,10 @@ arts.forEach(function(a){
 /* ---- tabs ---- */
 var gTypeset=false;
 function setBars(detail){
-  if(tabsEl) tabsEl.style.display = detail ? 'none' : 'flex';
   if(navEl)  navEl.style.display  = detail ? 'flex' : 'none';
   if(backEl) backEl.style.display = detail ? 'flex' : 'none';
-  if(tabsEl) tabsEl.classList.remove('off');
   if(navEl)  navEl.classList.remove('on');
+  if(ctrlEl) ctrlEl.classList.toggle('on',!detail);
   setTimeout(fitBottom,0);
 }
 
@@ -1803,10 +1829,9 @@ function view(v){
   listEl.classList.toggle('off',!isList);
   guideEl.classList.toggle('on',v==='guide');
   detEl.classList.remove('on');
-  [].forEach.call(tabsEl.querySelectorAll('button'),function(t){
-    t.classList.toggle('on',t.dataset.v===v);
-  });
-  ctrlEl.classList.toggle('on',isList);
+  curView=v;
+  buildCtrls();
+  ctrlEl.classList.add('on');
   saveSess({view:v,cur:-1,scroll:0});
   ttlEl.innerHTML=(v==='guide')
     ?'<small>Cheng &middot; Ch.7</small>공식과 개념 정리'
@@ -1825,9 +1850,6 @@ function view(v){
   }
   if(mainEl) mainEl.scrollTop=0;
 }
-[].forEach.call(tabsEl.querySelectorAll('button'),function(t){
-  t.addEventListener('click',function(){view(t.dataset.v);});
-});
 
 /* ---- 하단바 높이만큼만 비운다 (빈 공간 방지) ---- */
 function fitBottom(){
