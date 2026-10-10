@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cheng 7">
 <meta name="application-name" content="Cheng 7">
-<meta name="theme-color" content="#1b2e22">
+<meta name="theme-color" content="#14261a">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -64,8 +64,10 @@ body{
 }
 
 /* ---------- forest backdrop ---------- */
-#scrim{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
-#photo{position:fixed; inset:0; z-index:0; pointer-events:none;
+#scrim{position:fixed; top:0; left:0; width:100vw; height:100vh; height:100lvh;
+  z-index:0; pointer-events:none}
+#photo{position:fixed; top:0; left:0; width:100vw; height:100vh; height:100lvh;
+  z-index:0; pointer-events:none;
   background-image:url(forest.jpg); background-size:cover; background-position:center 44%;
   filter:saturate(.92) contrast(1.02);
   transform:translate3d(0,0,0) scale(1.24); will-change:transform}
@@ -85,7 +87,7 @@ main{position:relative; z-index:1}
 /* ---------- header ---------- */
 header{
   position:sticky; top:0; z-index:20;
-  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  background:color-mix(in srgb,var(--ground) 44%,transparent);
   -webkit-backdrop-filter:saturate(180%) blur(14px);
   backdrop-filter:saturate(180%) blur(14px);
   border-bottom:1px solid var(--rule);
@@ -265,18 +267,19 @@ nav button[disabled]{opacity:.38; cursor:default}
   --gl-lo:rgba(14,26,18,.12);      /* 아랫면 그림자선 */
   --gl-cast:rgba(12,24,16,.20);    /* 드리운 그림자 */
   --gl-on:#17230f;                 /* 초록 유리 위 글자 */
+  --on-sage:#ffffff;
   --sage:#627751;                  /* 사진에서 뽑은 숲색 */
   --sage-on:#415b33;               /* 완료 상태 */
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --gl-hi:rgba(255,255,255,.20); --gl-edge:rgba(255,255,255,.15);
   --gl-lo:rgba(0,0,0,.30); --gl-cast:rgba(0,0,0,.45); --gl-on:var(--ink);
-  --sage:#95a480; --sage-on:#b2c49a;
+  --sage:#95a480; --sage-on:#b2c49a; --on-sage:#17230f;
 }}
 :root[data-theme="dark"]{
   --gl-hi:rgba(255,255,255,.20); --gl-edge:rgba(255,255,255,.15);
   --gl-lo:rgba(0,0,0,.30); --gl-cast:rgba(0,0,0,.45); --gl-on:var(--ink);
-  --sage:#95a480; --sage-on:#b2c49a;
+  --sage:#95a480; --sage-on:#b2c49a; --on-sage:#17230f;
 }
 
 .card,.s,.rows,.seg{
@@ -372,7 +375,7 @@ nav button:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
 }
 .seg button{all:unset; cursor:pointer; padding:6px 11px; border-radius:8px; font-size:13px;
   font-weight:500; color:var(--ink-3); white-space:nowrap; line-height:1.3}
-.seg button.on{background:var(--accent); color:var(--on-sol); font-weight:600}
+.seg button.on{background:var(--sage-on); color:var(--on-sage); font-weight:600}
 .seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .seg .n{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:.75; margin-left:4px}
 
@@ -387,14 +390,16 @@ nav button:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
 .empty{padding:34px 16px; text-align:center; color:var(--ink-3); font-size:14.5px}
 
 /* ===== 앱 셸 — 문서가 아니라 앱처럼 ===== */
-html{height:100%}
-body{position:fixed; top:0; right:0; bottom:0; left:0; height:100%; height:100dvh;
-  overflow:hidden; display:flex; flex-direction:column}
+html{height:100%; background:#14261a}
+body{height:100%; overflow:hidden; display:flex; flex-direction:column}
 header{flex:none; position:static}
 main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:14px 16px calc(96px + env(safe-area-inset-bottom))}
 #ctrls{padding:0 0 14px}
+header{border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+h1,h1 small,.count{text-shadow:0 1px 4px var(--ground),0 0 12px var(--ground)}
+.back{text-shadow:0 1px 4px var(--ground)}
 
 #bottombar{position:fixed; left:0; right:0; bottom:0; z-index:40;
   padding:8px 12px calc(8px + env(safe-area-inset-bottom));
@@ -418,15 +423,23 @@ main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:to
 .tabs2.off{display:none}
 
 /* ===== 하단바 또렷하게 ===== */
-#bottombar{padding:6px 10px calc(5px + env(safe-area-inset-bottom));
-  background:color-mix(in srgb,var(--ground) 60%,transparent);
-  backdrop-filter:blur(24px) saturate(175%);
-  -webkit-backdrop-filter:blur(24px) saturate(175%);
-  border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+#bottombar{padding:7px 10px calc(3px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,
+    color-mix(in srgb,var(--ground) 30%,transparent) 0%,
+    color-mix(in srgb,var(--ground) 52%,transparent) 55%,
+    transparent 100%);
+  backdrop-filter:blur(20px) saturate(170%);
+  -webkit-backdrop-filter:blur(20px) saturate(170%);
+  -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.55) 0%,#000 26%,#000 100%);
+  mask-image:linear-gradient(to top,rgba(0,0,0,.55) 0%,#000 26%,#000 100%);
+  border-top:0}
 main{padding-bottom:84px}
-.tabs2 button{padding:6px 2px 4px; font-size:10.5px; color:color-mix(in srgb,var(--ink) 48%,transparent)}
-.tabs2 button i{font-size:19px}
+.tabs2 button{padding:5px 2px 3px; font-size:10.5px; gap:2px;
+  color:color-mix(in srgb,var(--ink) 46%,transparent)}
+.tabs2 button i{width:23px; height:23px; display:block}
+.tabs2 button i svg{width:100%; height:100%; display:block}
 .tabs2 button.on{color:var(--sage-on); font-weight:700}
+.tabs2 button.on i svg{stroke-width:2.2}
 
 /* ===== 풀이: 닫기를 위에 붙여 둔다 ===== */
 .s-h{position:sticky; top:-16px; z-index:3; margin:-16px -15px 12px; padding:14px 15px 10px;
@@ -1304,10 +1317,10 @@ main{padding-bottom:84px}
 
 <div id="bottombar">
   <div class="tabs2" id="tabs2">
-    <button type="button" data-v="list"><i>&#9776;</i><span>문제</span></button>
-    <button type="button" data-v="imp"><i>&#9733;</i><span>중요</span></button>
-    <button type="button" data-v="guide"><i>&#8721;</i><span>공식</span></button>
-    <button type="button" data-v="set"><i>&#9881;</i><span>설정</span></button>
+    <button type="button" data-v="list"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></i><span>문제</span></button>
+    <button type="button" data-v="imp"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.78L12 16.9l-5.2 2.73 1-5.78-4.2-4.1 5.8-.85z"/></svg></i><span>중요</span></button>
+    <button type="button" data-v="guide"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6.5l6 8-6 8H18"/></svg></i><span>공식</span></button>
+    <button type="button" data-v="set"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.3M12 18.9v2.3M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg></i><span>설정</span></button>
   </div>
   <nav id="navbar2">
     <button class="nav-side" id="prev" type="button" aria-label="이전 문제">&#8249;</button>
@@ -1545,9 +1558,10 @@ function open(i){
   guideEl.classList.remove('on');
   detEl.classList.add('on');
   backEl.style.display='flex';
-  tabsEl.style.display='none';
   ctrlEl.classList.remove('on');
-  tabsEl.classList.add('off'); navEl.classList.add('on');
+  setEl.classList.remove('on');
+  guideEl.classList.remove('on');
+  setBars(true);
   ttlEl.innerHTML='<small>Cheng &middot; Problem</small>'+a.dataset.t;
   saveSess({view:'detail',cur:i,scroll:0});
   prevEl.disabled=(i===0); nextEl.disabled=(i===arts.length-1);
@@ -1607,11 +1621,19 @@ arts.forEach(function(a){
 
 /* ---- tabs ---- */
 var gTypeset=false;
+function setBars(detail){
+  if(tabsEl) tabsEl.style.display = detail ? 'none' : 'flex';
+  if(navEl)  navEl.style.display  = detail ? 'flex' : 'none';
+  if(backEl) backEl.style.display = detail ? 'flex' : 'none';
+  if(tabsEl) tabsEl.classList.remove('off');
+  if(navEl)  navEl.classList.remove('on');
+  setTimeout(fitBottom,0);
+}
+
 function view(v){
   if(cur>=0){arts[cur].classList.remove('on'); cur=-1;}
   detEl.classList.remove('on');
-  backEl.style.display='none';
-  tabsEl.classList.remove('off'); navEl.classList.remove('on');
+  setBars(false);
   var isList=(v==='list'||v==='imp');
   setEl.classList.toggle('on',v==='set');
   if(v==='set') buildSettings();

@@ -1,5 +1,5 @@
 /* Cheng 7 — 오프라인 캐시 */
-const CACHE = 'cheng7-v3';
+const CACHE = 'cheng7-v4';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './tex-svg.js', './forest.jpg',
