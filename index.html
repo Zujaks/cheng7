@@ -64,10 +64,8 @@ body{
 }
 
 /* ---------- forest backdrop ---------- */
-#scrim{position:fixed; top:0; left:0; width:100vw; height:100vh; height:100lvh;
-  z-index:0; pointer-events:none}
-#photo{position:fixed; top:0; left:0; width:100vw; height:100vh; height:100lvh;
-  z-index:0; pointer-events:none;
+#scrim{position:fixed; top:-60px; bottom:-60px; left:0; right:0; z-index:0; pointer-events:none}
+#photo{position:fixed; top:-60px; bottom:-60px; left:0; right:0; z-index:0; pointer-events:none;
   background-image:url(forest.jpg); background-size:cover; background-position:center 44%;
   filter:saturate(.92) contrast(1.02);
   transform:translate3d(0,0,0) scale(1.24); will-change:transform}
@@ -258,6 +256,21 @@ nav button[disabled]{opacity:.38; cursor:default}
 @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
 
 /* ===== 숲 패널 — 원본 규칙보다 뒤에 와야 이긴다 ===== */
+
+/* 어두운 배경(밤하늘·노을)에서는 유리를 훨씬 묽게 */
+:root[data-bg="night"], :root[data-bg="sunset"]{
+  --pa1:17%; --pa2:7%; --pa3:12%;
+  --pa-row:11%; --pa-note:16%; --pa-rows:7%;
+  --gl-hi:rgba(255,255,255,.14); --gl-edge:rgba(255,255,255,.11);
+}
+:root[data-bg="night"] #scrim, :root[data-bg="sunset"] #scrim{opacity:.10}
+:root[data-bg="night"] #photo, :root[data-bg="sunset"] #photo{filter:saturate(1) brightness(1) contrast(1)}
+:root[data-bg="night"] #bottombar, :root[data-bg="sunset"] #bottombar{
+  background:linear-gradient(to top,
+    rgba(10,14,22,.80) 0%, rgba(10,14,22,.70) 58%, rgba(10,14,22,.30) 88%, transparent 100%)}
+:root[data-bg="night"] header, :root[data-bg="sunset"] header{
+  background:rgba(10,14,22,.34)}
+
 /* ===== 유리 패널 =====
    backdrop-filter 는 그 자체가 backdrop root 를 만드니 바깥 한 겹에만 건다.
    blur 는 얕게 두고 saturate/brightness/contrast 로 '쨍함'을 만든다. */
@@ -268,6 +281,8 @@ nav button[disabled]{opacity:.38; cursor:default}
   --gl-cast:rgba(12,24,16,.20);    /* 드리운 그림자 */
   --gl-on:#17230f;                 /* 초록 유리 위 글자 */
   --on-sage:#ffffff;
+  --pa1:40%; --pa2:19%; --pa3:28%;  /* 패널 유리 농도 */
+  --pa-row:26%; --pa-note:34%; --pa-rows:15%;
   --sage:#627751;                  /* 사진에서 뽑은 숲색 */
   --sage-on:#415b33;               /* 완료 상태 */
 }
@@ -299,17 +314,17 @@ nav button[disabled]{opacity:.38; cursor:default}
 .card,.s{
   background:
     linear-gradient(158deg,
-      color-mix(in srgb,var(--surface) 40%,transparent) 0%,
-      color-mix(in srgb,var(--surface) 19%,transparent) 46%,
-      color-mix(in srgb,var(--surface) 28%,transparent) 100%);
+      color-mix(in srgb,var(--surface) var(--pa1),transparent) 0%,
+      color-mix(in srgb,var(--surface) var(--pa2),transparent) 46%,
+      color-mix(in srgb,var(--surface) var(--pa3),transparent) 100%);
 }
 .rows{
   gap:0;
   background:
     linear-gradient(158deg,
-      color-mix(in srgb,var(--surface) 34%,transparent) 0%,
-      color-mix(in srgb,var(--surface) 14%,transparent) 50%,
-      color-mix(in srgb,var(--surface) 24%,transparent) 100%);
+      color-mix(in srgb,var(--surface) calc(var(--pa1) - 6%),transparent) 0%,
+      color-mix(in srgb,var(--surface) calc(var(--pa2) - 5%),transparent) 50%,
+      color-mix(in srgb,var(--surface) calc(var(--pa3) - 4%),transparent) 100%);
 }
 
 /* 안쪽 — 블러를 걸지 않는다(중첩 금지). 얇은 구분선만 */
@@ -317,7 +332,7 @@ nav button[disabled]{opacity:.38; cursor:default}
 .rows .row:first-child{border-top:0}
 .row:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
 .const>div{background:color-mix(in srgb,var(--surface) 26%,transparent)}
-.note{background:color-mix(in srgb,var(--surface-2) 30%,transparent);
+.note{background:color-mix(in srgb,var(--surface-2) var(--pa-note),transparent);
   box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gl-hi) 60%,transparent)}
 .note.warn{background:color-mix(in srgb,var(--warn-soft) 38%,transparent)}
 .num{background:color-mix(in srgb,var(--accent-soft) 46%,transparent);
@@ -390,7 +405,7 @@ nav button:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
 .empty{padding:34px 16px; text-align:center; color:var(--ink-3); font-size:14.5px}
 
 /* ===== 앱 셸 — 문서가 아니라 앱처럼 ===== */
-html{height:100%; background:#14261a}
+html{height:100%; background:var(--ground)}
 body{height:100%; overflow:hidden; display:flex; flex-direction:column}
 header{flex:none; position:static}
 main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
@@ -423,15 +438,14 @@ h1,h1 small,.count{text-shadow:0 1px 4px var(--ground),0 0 12px var(--ground)}
 .tabs2.off{display:none}
 
 /* ===== 하단바 또렷하게 ===== */
-#bottombar{padding:7px 10px calc(3px + env(safe-area-inset-bottom));
+#bottombar{padding:7px 10px calc(4px + env(safe-area-inset-bottom));
   background:linear-gradient(to top,
-    color-mix(in srgb,var(--ground) 30%,transparent) 0%,
-    color-mix(in srgb,var(--ground) 52%,transparent) 55%,
+    color-mix(in srgb,var(--ground) 74%,transparent) 0%,
+    color-mix(in srgb,var(--ground) 68%,transparent) 58%,
+    color-mix(in srgb,var(--ground) 34%,transparent) 88%,
     transparent 100%);
-  backdrop-filter:blur(20px) saturate(170%);
-  -webkit-backdrop-filter:blur(20px) saturate(170%);
-  -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.55) 0%,#000 26%,#000 100%);
-  mask-image:linear-gradient(to top,rgba(0,0,0,.55) 0%,#000 26%,#000 100%);
+  backdrop-filter:blur(22px) saturate(170%);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);
   border-top:0}
 main{padding-bottom:84px}
 .tabs2 button{padding:5px 2px 3px; font-size:10.5px; gap:2px;
@@ -1397,12 +1411,17 @@ var BGS=[
 ];
 var BKEY='cheng7.bg.v1';
 function curBG(){ try{ return localStorage.getItem(BKEY)||'forest'; }catch(e){ return 'forest'; } }
+var DARKBG={night:1,sunset:1};
 function applyBG(k){
   var ph=document.getElementById('photo'); if(!ph) return;
   var b=null; for(var i=0;i<BGS.length;i++) if(BGS[i].k===k) b=BGS[i];
   if(!b) b=BGS[0];
   if(b.f){ ph.style.backgroundImage='url('+b.f+')'; ph.style.display='block'; }
   else   { ph.style.backgroundImage='none'; ph.style.display='none'; }
+  var R=document.documentElement;
+  R.setAttribute('data-bg',b.k);
+  if(DARKBG[b.k]) R.setAttribute('data-theme','dark');
+  else R.removeAttribute('data-theme');
   try{ localStorage.setItem(BKEY,b.k); }catch(e){}
 }
 function buildSettings(){
@@ -1414,7 +1433,7 @@ function buildSettings(){
           (b.f?' style="background-image:url('+b.f+')"':'')+
           '><span>'+b.n+'</span></button>';
   });
-  html+='</div><p class="setnote">\uace0\ub978 \ubc30\uacbd\uc740 \uc774 \uae30\uae30\uc5d0\ub9cc \uc800\uc7a5\ub429\ub2c8\ub2e4.</p></div>'+
+  html+='</div><p class="setnote">\uace0\ub978 \ubc30\uacbd\uc740 \uc774 \uae30\uae30\uc5d0\ub9cc \uc800\uc7a5\ub429\ub2c8\ub2e4. \ubc24\ud558\ub298\u00b7\ub178\uc744\uc740 \uc790\ub3d9\uc73c\ub85c \uc5b4\ub461\uac8c \ubc14\ub01d\ub2c8\ub2e4.</p></div>'+
         '<div class="sect"><h3>\uc9c4\ub3c4</h3>'+
         '<button type="button" class="danger" id="wipe">\ubcc4 \ud45c\uc2dc\u00b7\ubcf5\uc2b5 \uc644\ub8cc \uc804\ubd80 \uc9c0\uc6b0\uae30</button>'+
         '<p class="setnote" id="wipeinfo"></p></div>';
@@ -1702,9 +1721,12 @@ window.addEventListener('beforeunload',function(){ saveSess(); });
 (function(){
 "use strict";
 var ph=document.getElementById('photo'); if(!ph) return;
-try{ var saved=localStorage.getItem('cheng7.bg.v1');
-  if(saved){ var m={forest:'forest.jpg',night:'bg-night.jpg',sea:'bg-sea.jpg',sunset:'bg-sunset.jpg',mist:'bg-mist.jpg'};
-    if(saved==='none'){ ph.style.display='none'; } else if(m[saved]){ ph.style.backgroundImage='url('+m[saved]+')'; } }
+try{ var saved=localStorage.getItem('cheng7.bg.v1')||'forest';
+  var m={forest:'forest.jpg',night:'bg-night.jpg',sea:'bg-sea.jpg',sunset:'bg-sunset.jpg',mist:'bg-mist.jpg'};
+  var R=document.documentElement;
+  R.setAttribute('data-bg',saved);
+  if(saved==='night'||saved==='sunset') R.setAttribute('data-theme','dark');
+  if(saved==='none'){ ph.style.display='none'; } else if(m[saved]){ ph.style.backgroundImage='url('+m[saved]+')'; }
 }catch(e){}
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
