@@ -26,7 +26,7 @@ img{max-width:100%}
   --ground:#EFF1F6; --surface:#FFFFFF; --surface-2:#F7F8FC;
   --ink:#151823; --ink-2:#4A5163; --ink-3:#767E94;
   --rule:#DDE1EC; --rule-2:#C9CEDE;
-  --accent:#3A34B8; --accent-soft:#E8E7FA;
+  --accent:#16553A; --accent-soft:#D8E9DD;
   --sol:#0C6F6D; --sol-soft:#DDF0EF;
   --done:#2F7D46; --on-sol:#FFFFFF; --on-done:#FFFFFF;
   --warn:#9A4A08; --warn-soft:#FCF1E4; --warn-line:#EFD9BE;
@@ -37,7 +37,7 @@ img{max-width:100%}
     --ground:#0D0F15; --surface:#161A23; --surface-2:#1D222D;
     --ink:#E9EBF3; --ink-2:#A8AEC2; --ink-3:#767E94;
     --rule:#262B38; --rule-2:#333A4A;
-    --accent:#9A95FF; --accent-soft:#232244;
+    --accent:#7FD3A4; --accent-soft:#15301F;
     --sol:#57C8C4; --sol-soft:#123231;
     --done:#6FCB8A; --on-sol:#0D0F15; --on-done:#0D0F15;
   --warn:#E8A75C; --warn-soft:#2A2014; --warn-line:#45351F;
@@ -49,7 +49,7 @@ img{max-width:100%}
   --ground:#0D0F15; --surface:#161A23; --surface-2:#1D222D;
   --ink:#E9EBF3; --ink-2:#A8AEC2; --ink-3:#767E94;
   --rule:#262B38; --rule-2:#333A4A;
-  --accent:#9A95FF; --accent-soft:#232244;
+  --accent:#7FD3A4; --accent-soft:#15301F;
   --sol:#57C8C4; --sol-soft:#123231;
   --done:#6FCB8A; --on-sol:#0D0F15; --on-done:#0D0F15;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
@@ -612,6 +612,10 @@ nav button{height:52px; border-radius:26px; box-shadow:none}
 .s{padding-top:16px}
 /* 상세 페이지 — 몇 번 문제인지 또렷하게 */
 h1 small.pn{color:var(--accent); font-weight:600; letter-spacing:.1em; opacity:1}
+
+/* 강조색이 숲과 같은 초록 계열이 됐으니 사진 위 글자는 번짐을 한 겹 더 */
+.grp-h b, .grp-h span, .sect>h3{
+  text-shadow:0 1px 3px var(--ground), 0 0 8px var(--ground), 0 0 17px var(--ground)}
 </style>
 </head>
 <body>
