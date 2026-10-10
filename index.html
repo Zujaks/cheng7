@@ -257,11 +257,42 @@ nav button[disabled]{opacity:.38; cursor:default}
 
 /* ===== 숲 패널 — 원본 규칙보다 뒤에 와야 이긴다 ===== */
 
-/* 어두운 배경(밤하늘·노을)에서는 유리를 훨씬 묽게 */
+/* 어두운 배경(밤하늘·노을): 묽게 + 광학 보정을 끈다.
+   saturate/brightness 를 올리면 밤하늘이 파랗게 들떠 '판'처럼 보이고,
+   blur 가 크면 별이 뭉개져 유리 느낌이 사라진다. */
 :root[data-bg="night"], :root[data-bg="sunset"]{
-  --pa1:17%; --pa2:7%; --pa3:12%;
-  --pa-row:11%; --pa-note:16%; --pa-rows:7%;
-  --gl-hi:rgba(255,255,255,.14); --gl-edge:rgba(255,255,255,.11);
+  --pa1:12%; --pa2:4%; --pa3:8%;
+  --pa-row:7%; --pa-note:11%; --pa-rows:4%;
+  --gl-hi:rgba(255,255,255,.24); --gl-edge:rgba(255,255,255,.17);
+  --gl-lo:rgba(0,0,0,.34); --gl-cast:rgba(0,0,0,.50);
+}
+:root[data-bg="night"] .card, :root[data-bg="night"] .s,
+:root[data-bg="night"] .rows, :root[data-bg="night"] .seg,
+:root[data-bg="sunset"] .card, :root[data-bg="sunset"] .s,
+:root[data-bg="sunset"] .rows, :root[data-bg="sunset"] .seg{
+  backdrop-filter:blur(4px) saturate(104%);
+  -webkit-backdrop-filter:blur(4px) saturate(104%);
+}
+:root[data-bg="night"] .reveal, :root[data-bg="night"] .nav-mark,
+:root[data-bg="sunset"] .reveal, :root[data-bg="sunset"] .nav-mark{
+  backdrop-filter:blur(4px) saturate(104%);
+  -webkit-backdrop-filter:blur(4px) saturate(104%);
+}
+:root[data-bg="night"] .card, :root[data-bg="sunset"] .card,
+:root[data-bg="night"] .s, :root[data-bg="sunset"] .s,
+:root[data-bg="night"] .rows, :root[data-bg="sunset"] .rows{
+  box-shadow:inset 0 1px 0 var(--gl-hi),
+             inset 1px 0 0 color-mix(in srgb,var(--gl-hi) 45%,transparent),
+             inset 0 -1px 0 var(--gl-lo),
+             0 1px 1px var(--gl-cast), 0 16px 38px var(--gl-cast);
+}
+:root[data-bg="night"] #bottombar, :root[data-bg="sunset"] #bottombar{
+  backdrop-filter:blur(10px) saturate(104%);
+  -webkit-backdrop-filter:blur(10px) saturate(104%);
+}
+:root[data-bg="night"] header, :root[data-bg="sunset"] header{
+  backdrop-filter:blur(10px) saturate(104%);
+  -webkit-backdrop-filter:blur(10px) saturate(104%);
 }
 :root[data-bg="night"] #scrim, :root[data-bg="sunset"] #scrim{opacity:.10}
 :root[data-bg="night"] #photo, :root[data-bg="sunset"] #photo{filter:saturate(1) brightness(1) contrast(1)}
@@ -1402,11 +1433,11 @@ var setEl=document.getElementById('settings');
 
 /* ---- 배경 ---- */
 var BGS=[
-  {k:'forest', n:'\uc232',       f:'forest.jpg'},
-  {k:'night',  n:'\ubc24\ud558\ub298', f:'bg-night.jpg'},
-  {k:'sea',    n:'\ubc14\ub2e4',   f:'bg-sea.jpg'},
-  {k:'sunset', n:'\ub178\uc744',   f:'bg-sunset.jpg'},
-  {k:'mist',   n:'\uc548\uac1c \uc0b0', f:'bg-mist.jpg'},
+  {k:'forest', n:'\uc232',       f:'forest.jpg',   t:'#d0cfc0', b:'#b3bc8d'},
+  {k:'night',  n:'\ubc24\ud558\ub298', f:'bg-night.jpg', t:'#070d20', b:'#0f1730'},
+  {k:'sea',    n:'\ubc14\ub2e4',   f:'bg-sea.jpg',   t:'#bed7dc', b:'#133140'},
+  {k:'sunset', n:'\ub178\uc744',   f:'bg-sunset.jpg',t:'#3d224a', b:'#231820'},
+  {k:'mist',   n:'\uc548\uac1c \uc0b0', f:'bg-mist.jpg',  t:'#d1dae0', b:'#77818a'},
   {k:'none',   n:'\uc5c6\uc74c',   f:null}
 ];
 var BKEY='cheng7.bg.v1';
@@ -1422,6 +1453,13 @@ function applyBG(k){
   R.setAttribute('data-bg',b.k);
   if(DARKBG[b.k]) R.setAttribute('data-theme','dark');
   else R.removeAttribute('data-theme');
+  /* iOS 홈화면 앱은 상단 상태바 띠를 theme-color 로, 하단 세이프에어리어를
+     html 배경색으로 칠한다. 사진의 위/아래 끝색과 맞춰야 띠가 안 보인다. */
+  var tc=document.querySelector('meta[name="theme-color"]');
+  if(!tc){ tc=document.createElement('meta'); tc.name='theme-color'; document.head.appendChild(tc); }
+  tc.setAttribute('content', b.t || '#14261a');
+  R.style.background = b.b || '';
+  if(document.body) document.body.style.background = b.b || '';
   try{ localStorage.setItem(BKEY,b.k); }catch(e){}
 }
 function buildSettings(){
