@@ -1584,24 +1584,18 @@ function buildSettings(){
       b.classList.add('on');
     });
   });
-  /* viewport-fit=cover 가 실제로 먹었는지 확인용.
-     cover 가 먹으면 inset 이 0 이 아니고 화면높이 == 기기높이 가 된다. */
   (function(){
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;left:0;top:0;width:0;height:0;'+
-      'padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);'+
-      'visibility:hidden';
-    document.body.appendChild(d);
-    var cs=getComputedStyle(d);
-    var t=parseFloat(cs.paddingTop)||0, b=parseFloat(cs.paddingBottom)||0;
-    d.remove();
-    var sa=('standalone' in navigator) ? (navigator.standalone?'\uc608':'\uc544\ub2c8\uc624(\uc0ac\ud30c\ub9ac)') : '-';
+    var sa=saInset();
+    var st=('standalone' in navigator) ? (navigator.standalone?'\uc608':'\uc544\ub2c8\uc624(\uc0ac\ud30c\ub9ac)') : '-';
     var vh=Math.round(window.innerHeight), sh=Math.round(screen.height);
-    var cover=(t>0||b>0)&&vh>=sh-2;
+    var bb=document.getElementById('bottombar');
+    var pb=bb?Math.round(parseFloat(getComputedStyle(bb).paddingBottom)||0):0;
     var e=setEl.querySelector('#diag');
-    if(e) e.innerHTML='\ud648\ud654\uba74 \uc571 '+sa+
-      ' \u00b7 \uc0c1\ub2e8 \uc5ec\ubc31 '+t.toFixed(0)+'px \u00b7 \ud558\ub2e8 \uc5ec\ubc31 '+b.toFixed(0)+'px<br>'+
-      '\ud654\uba74 '+vh+' / \uae30\uae30 '+sh+' \u2192 \uc804\uccb4\ud654\uba74 '+(cover?'\uc801\uc6a9\ub428':'\uc548 \ub428 \u2014 \ud648\ud654\uba74 \uc544\uc774\ucf58 \uc0ad\uc81c \ud6c4 \ub2e4\uc2dc \ucd94\uac00');
+    if(e) e.innerHTML='\ud648\ud654\uba74 \uc571 '+st+
+      ' \u00b7 \uc0c1\ub2e8 \uc5ec\ubc31 '+sa.t.toFixed(0)+'px \u00b7 \ud558\ub2e8 \uc5ec\ubc31 '+sa.b.toFixed(0)+'px<br>'+
+      '\ud654\uba74 '+vh+' / \uae30\uae30 '+sh+' \u2192 \uc804\uccb4\ud654\uba74 '+
+      (sa.cover?'\uc801\uc6a9\ub428':'\uc548 \ub428 (\ub808\ud130\ubc15\uc2a4 \ubcf4\uc815 \uc911)')+
+      '<br>\ud558\ub2e8\ubc14 \uc5ec\ubc31 '+pb+'px';
   })();
   var c=counts();
   setEl.querySelector('#wipeinfo').textContent=
@@ -1855,10 +1849,31 @@ function view(v){
   if(mainEl) mainEl.scrollTop=0;
 }
 
+/* ---- 세이프에어리어 실측 · cover 판정 (하단 여백 계산과 진단이 공유) ---- */
+function saInset(){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;left:0;top:0;width:0;height:0;'+
+    'padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);'+
+    'visibility:hidden';
+  (document.body||document.documentElement).appendChild(d);
+  var cs=getComputedStyle(d);
+  var r={t:parseFloat(cs.paddingTop)||0, b:parseFloat(cs.paddingBottom)||0};
+  d.remove();
+  r.cover=(r.t>0||r.b>0) && Math.round(window.innerHeight)>=Math.round(screen.height)-2;
+  return r;
+}
+
 /* ---- 하단바 높이만큼만 비운다 (빈 공간 방지) ---- */
 function fitBottom(){
   var bb=document.getElementById('bottombar');
-  if(bb&&mainEl) mainEl.style.paddingBottom=(bb.offsetHeight+10)+'px';
+  if(!bb) return;
+  /* cover 가 안 걸리는 기기에선 레터박스가 이미 홈 인디케이터 자리를 비워뒀다.
+     여기에 세이프에어리어를 또 주면 버튼이 띠 위에 떠 보이므로 30% 로 줄인다. */
+  var sa=saInset();
+  bb.style.paddingBottom = sa.cover
+    ? 'calc(10px + ' + sa.b + 'px)'
+    : Math.max(3, Math.round((10 + sa.b) * 0.3)) + 'px';
+  if(mainEl) mainEl.style.paddingBottom=(bb.offsetHeight+10)+'px';
 }
 window.addEventListener('resize',fitBottom);
 window.addEventListener('orientationchange',function(){ setTimeout(fitBottom,120); });
