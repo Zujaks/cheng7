@@ -1,0 +1,49 @@
+<!doctype html><meta charset="utf-8"><title>Walker Preview</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;font:13px -apple-system,sans-serif}
+body{background:#16301f url(forest.jpg) center/cover;color:#eee}
+.lab{position:fixed;top:10px;left:0;right:0;text-align:center;text-shadow:0 1px 6px #000;opacity:.85}
+.strip{position:fixed;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.2)}
+#walker{position:fixed;left:0;bottom:6px;z-index:30;pointer-events:none;
+  will-change:transform;transform:translateX(-240px)}
+#walker.go{animation:walk-across var(--wdur,14s) linear 1 both}
+.wtoto{display:block;width:22px;height:31px;
+  background:url(toto.png) 0 0/352px 31px no-repeat;
+  animation:toto-step 1.4s steps(16) infinite;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.38))}
+#walker.rtl .wtoto{transform:scaleX(-1)}
+@keyframes walk-across{from{transform:translateX(var(--wfrom,-240px))}
+  to{transform:translateX(var(--wto,-240px))}}
+@keyframes toto-step{from{background-position:0 0} to{background-position:-352px 0}}
+/* 제자리걸음 — 걸음 자체만 크게 보기 */
+.rig{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(7);
+  transform-origin:50% 50%}
+.rig .wtoto{filter:drop-shadow(0 1px 2px rgba(0,0,0,.38))}
+.cap{position:fixed;left:0;right:0;top:calc(50% + 130px);text-align:center;
+  opacity:.75;text-shadow:0 1px 6px #000}
+</style>
+<div class="lab">미리보기 — 3초마다 지나감 / 가운데는 7배 확대한 제자리걸음</div>
+<div class="rig"><span class="wtoto"></span></div>
+<div class="cap">16컷 · 1.4초 한 바퀴 · 실제 22x31px</div>
+<div class="strip"></div>
+<script>
+var wEl=document.createElement('div');
+wEl.id='walker';
+wEl.innerHTML='<span class="wtoto"></span>';
+document.body.appendChild(wEl);
+var wRight=false;
+function go(){
+  wEl.classList.remove('go');
+  wRight=!wRight;
+  var W=window.innerWidth,pad=40,spd=9+Math.random()*2.5;
+  wEl.style.setProperty('--wfrom',(wRight?-pad:W+pad)+'px');
+  wEl.style.setProperty('--wto',  (wRight?W+pad:-pad)+'px');
+  wEl.style.setProperty('--wdur', ((W+2*pad)/spd).toFixed(1)+'s');
+  wEl.classList.toggle('rtl',!wRight);
+  void wEl.offsetWidth; wEl.classList.add('go');
+}
+wEl.addEventListener('animationend',function(e){
+  if(e.animationName==='walk-across') setTimeout(go,1500);
+});
+go();
+</script>

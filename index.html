@@ -616,6 +616,38 @@ h1 small.pn{color:var(--accent); font-weight:600; letter-spacing:.1em; opacity:1
 /* 강조색이 숲과 같은 초록 계열이 됐으니 사진 위 글자는 번짐을 한 겹 더 */
 .grp-h b, .grp-h span, .sect>h3{
   text-shadow:0 1px 3px var(--ground), 0 0 8px var(--ground), 0 0 17px var(--ground)}
+
+/* ===== 숲 친구 — 5분에 한 번 화면 맨 아래를 걸어간다 ===== */
+#walker{position:fixed; left:0; bottom:0; z-index:30; pointer-events:none;
+  will-change:transform; transform:translateX(-240px)}
+#walker.go{animation:walk-across var(--wdur,14s) linear 1 both}
+.wtoto{display:block; width:22px; height:31px;   /* 해설 본문 15.5px 의 두 배 */
+  background:url(toto.png) 0 0/352px 31px no-repeat;
+  animation:toto-step 1.4s steps(16) infinite;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.38))}
+#walker.rtl .wtoto{transform:scaleX(-1)}
+@keyframes walk-across{
+  from{transform:translateX(var(--wfrom,-240px))}
+  to  {transform:translateX(var(--wto,-240px))}}
+@keyframes toto-step{from{background-position:0 0} to{background-position:-352px 0}}
+
+/* 설정 — 켜고 끄는 스위치 */
+.tgl{all:unset; cursor:pointer; box-sizing:border-box; display:flex; width:100%;
+  align-items:center; justify-content:space-between; gap:10px; padding:11px 13px;
+  border-radius:13px; font-size:14px; color:var(--ink);
+  border:1px solid var(--gl-edge);
+  background:color-mix(in srgb,var(--surface) 26%,transparent);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
+.tgl:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.tgl i{flex:none; width:40px; height:23px; border-radius:12px; position:relative;
+  background:color-mix(in srgb,var(--ink) 22%,transparent); transition:background .18s}
+.tgl i::after{content:""; position:absolute; top:2.5px; left:2.5px;
+  width:18px; height:18px; border-radius:50%; background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .18s}
+.tgl.on i{background:var(--accent)}
+.tgl.on i::after{transform:translateX(17px)}
+.linkb{all:unset; cursor:pointer; color:var(--accent); font-weight:600;
+  text-decoration:underline; text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -1571,6 +1603,11 @@ function buildSettings(){
           '><span>'+b.n+'</span></button>';
   });
   html+='</div><p class="setnote">\uace0\ub978 \ubc30\uacbd\uc740 \uc774 \uae30\uae30\uc5d0\ub9cc \uc800\uc7a5\ub429\ub2c8\ub2e4. \ubc24\ud558\ub298\u00b7\ub178\uc744\uc740 \uc790\ub3d9\uc73c\ub85c \uc5b4\ub461\uac8c \ubc14\ub01d\ub2c8\ub2e4.</p></div>'+
+        '<div class="sect"><h3>\uc232 \uce5c\uad6c</h3>'+
+        '<button type="button" class="tgl'+(walkOn()?' on':'')+'" id="walktgl">'+
+          '<span>5\ubd84\ub9c8\ub2e4 \ud654\uba74 \uc544\ub798\ub97c \uc9c0\ub098\uac00\uc694</span><i></i></button>'+
+        '<p class="setnote">\uc911\ud1a0\ub85c\uac00 \ub3c4\ud1a0\ub9ac \uc790\ub8e8\ub97c \ubb3c\uace0, \uc18c\ud1a0\ub85c\uc640 \ud568\uaed8 \ub6a4\ub6a4 \uac78\uc5b4\uac11\ub2c8\ub2e4. '+
+          '<button type="button" class="linkb" id="walknow">\uc9c0\uae08 \ubcf4\uae30</button></p></div>'+
         '<div class="sect"><h3>\ud654\uba74 \uc9c4\ub2e8</h3>'+
         '<p class="setnote" id="diag"></p></div>'+
         '<div class="sect"><h3>\uc9c4\ub3c4</h3>'+
@@ -1584,6 +1621,19 @@ function buildSettings(){
       b.classList.add('on');
     });
   });
+  (function(){
+    var tg=setEl.querySelector('#walktgl');
+    if(tg) tg.addEventListener('click',function(){
+      var v=!tg.classList.contains('on');
+      tg.classList.toggle('on',v); walkSet(v);
+      if(v){ walkPlan(1200); } else { clearTimeout(wTimer); if(wEl) wEl.classList.remove('go'); }
+    });
+    var nw=setEl.querySelector('#walknow');
+    if(nw) nw.addEventListener('click',function(){
+      if(!walkOn()){ walkSet(true); if(tg) tg.classList.add('on'); walkPlan(WEVERY); }
+      walkOnce();
+    });
+  })();
   (function(){
     var sa=saInset();
     var st=('standalone' in navigator) ? (navigator.standalone?'\uc608':'\uc544\ub2c8\uc624(\uc0ac\ud30c\ub9ac)') : '-';
@@ -1878,6 +1928,62 @@ function fitBottom(){
 window.addEventListener('resize',fitBottom);
 window.addEventListener('orientationchange',function(){ setTimeout(fitBottom,120); });
 fitBottom(); setTimeout(fitBottom,300); setTimeout(fitBottom,1200);
+
+/* ---- 숲 친구: 5분에 한 번, 화면 맨 아래를 뒤뚱뒤뚱 지나간다 ---- */
+var WKEY='cheng7.walk.v1', WEVERY=5*60*1000;
+var wEl=null, wTimer=null, wRight=false;
+
+function walkOn(){ try{ return localStorage.getItem(WKEY)!=='0'; }catch(e){ return true; } }
+function walkSet(v){ try{ localStorage.setItem(WKEY, v?'1':'0'); }catch(e){} }
+function wReduce(){ return !!(window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+
+function walkNode(){
+  if(wEl) return wEl;
+  wEl=document.createElement('div');
+  wEl.id='walker'; wEl.setAttribute('aria-hidden','true');
+  wEl.innerHTML='<span class="wtoto"></span>';
+  document.body.appendChild(wEl);
+  wEl.addEventListener('animationend',function(e){
+    if(e.animationName==='walk-across') wEl.classList.remove('go');
+  });
+  return wEl;
+}
+
+/* 하단바와 같은 기준으로 레터박스 위에 발을 붙인다 */
+function walkBottom(){
+  var sa=saInset();
+  return (sa.cover ? sa.b+3 : Math.max(2, Math.round(sa.b*0.3)+3))+'px';
+}
+
+function walkOnce(){
+  if(!walkOn() || wReduce()) return;
+  var el=walkNode();
+  if(el.classList.contains('go')) return;
+  el.style.bottom=walkBottom();
+  wRight=!wRight;                       /* 지날 때마다 방향을 바꾼다 */
+  var W=window.innerWidth, pad=40;     /* 몸집이 22px 라 여유는 이 정도면 충분 */
+  var spd=9+Math.random()*2.5;          /* px/s — 몸집(0.41배)에 맞춘 속도. 발이 안 미끄러진다 */
+  el.style.setProperty('--wfrom', (wRight? -pad : W+pad)+'px');
+  el.style.setProperty('--wto',   (wRight? W+pad : -pad)+'px');
+  el.style.setProperty('--wdur',  ((W+2*pad)/spd).toFixed(1)+'s');
+  el.classList.toggle('rtl', !wRight);
+  void el.offsetWidth;                  /* 애니메이션 재시작 */
+  el.classList.add('go');
+}
+
+function walkPlan(ms){
+  clearTimeout(wTimer);
+  if(!walkOn() || wReduce()) return;
+  wTimer=setTimeout(function(){
+    if(document.hidden){ walkPlan(30000); return; }   /* 안 보는 동안은 건너뛴다 */
+    walkOnce(); walkPlan(WEVERY);
+  }, ms);
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden && wEl) wEl.classList.remove('go');
+});
+walkPlan(25000);                        /* 앱 열고 25초 뒤 첫 등장 */
 
 /* ---- 세션 복원 ---- */
 (function restore(){
