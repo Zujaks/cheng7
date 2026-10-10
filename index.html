@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cheng 7">
+<meta name="application-name" content="Cheng 7">
+<meta name="theme-color" content="#1b2e22">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{color-scheme:light}
+html,body{margin:0;padding:0}
+img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}
+</style>
+<title>Cheng 평면파 문제집</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Serif:wght@400&display=swap">
+<style>
+:root{
+  --ground:#EFF1F6; --surface:#FFFFFF; --surface-2:#F7F8FC;
+  --ink:#151823; --ink-2:#4A5163; --ink-3:#767E94;
+  --rule:#DDE1EC; --rule-2:#C9CEDE;
+  --accent:#3A34B8; --accent-soft:#E8E7FA;
+  --sol:#0C6F6D; --sol-soft:#DDF0EF;
+  --done:#2F7D46; --on-sol:#FFFFFF; --on-done:#FFFFFF;
+  --warn:#9A4A08; --warn-soft:#FCF1E4; --warn-line:#EFD9BE;
+  --shadow:0 1px 2px rgba(20,24,40,.05),0 4px 14px rgba(20,24,40,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D0F15; --surface:#161A23; --surface-2:#1D222D;
+    --ink:#E9EBF3; --ink-2:#A8AEC2; --ink-3:#767E94;
+    --rule:#262B38; --rule-2:#333A4A;
+    --accent:#9A95FF; --accent-soft:#232244;
+    --sol:#57C8C4; --sol-soft:#123231;
+    --done:#6FCB8A; --on-sol:#0D0F15; --on-done:#0D0F15;
+  --warn:#E8A75C; --warn-soft:#2A2014; --warn-line:#45351F;
+    --warn:#E8A75C; --warn-soft:#2A2014; --warn-line:#45351F;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D0F15; --surface:#161A23; --surface-2:#1D222D;
+  --ink:#E9EBF3; --ink-2:#A8AEC2; --ink-3:#767E94;
+  --rule:#262B38; --rule-2:#333A4A;
+  --accent:#9A95FF; --accent-soft:#232244;
+  --sol:#57C8C4; --sol-soft:#123231;
+  --done:#6FCB8A; --on-sol:#0D0F15; --on-done:#0D0F15;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{
+  margin:0; background:transparent; color:var(--ink);
+  font-family:'IBM Plex Sans','IBM Plex Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px; line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ---------- forest backdrop ---------- */
+#scrim{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
+#photo{position:fixed; inset:-10%; z-index:0; pointer-events:none;
+  background-image:url(forest.jpg); background-size:cover; background-position:center 44%;
+  filter:saturate(.92) contrast(1.02);
+  transform:translate3d(0,0,0) scale(1.24); will-change:transform}
+#scrim{background:var(--ground); opacity:.16}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #photo{filter:saturate(.76) brightness(.44) contrast(1.05)}
+  :root:not([data-theme="light"]) #scrim{opacity:.34}
+}
+:root[data-theme="dark"] #photo{filter:saturate(.76) brightness(.44) contrast(1.05)}
+:root[data-theme="dark"] #scrim{opacity:.34}
+header{z-index:30}
+main{position:relative; z-index:1}
+
+
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:20;
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--rule);
+  padding:max(env(safe-area-inset-top),10px) 16px 10px;
+}
+.hrow{display:flex; align-items:center; gap:10px; min-height:34px}
+.back{
+  all:unset; cursor:pointer; display:none; align-items:center; gap:4px;
+  font-size:15px; font-weight:500; color:var(--accent);
+  padding:6px 8px 6px 2px; margin:-6px 0 -6px -2px; border-radius:8px;
+}
+.back:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+h1{
+  font-size:16px; font-weight:600; margin:0; letter-spacing:-.01em;
+  text-wrap:balance; flex:1; min-width:0;
+}
+h1 small{display:block; font-size:11px; font-weight:500; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase; font-family:'IBM Plex Mono',monospace}
+.count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap}
+.bar{height:2px; background:var(--rule); border-radius:2px; margin-top:10px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--done); width:0; transition:width .3s ease}
+
+.tabs{display:flex; gap:4px; margin-top:10px}
+.tab{
+  all:unset; cursor:pointer; flex:1; text-align:center;
+  padding:8px 4px; border-radius:9px; font-size:14px; font-weight:500;
+  color:var(--ink-3); background:transparent; border:1px solid transparent;
+}
+.tab.on{color:var(--accent); background:var(--accent-soft); font-weight:600}
+.tab:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+#guide{display:none}
+#guide.on{display:block}
+.flow{display:flex; flex-direction:column; gap:0; padding:6px 16px 16px}
+.fl{display:flex; gap:13px; padding:13px 0; border-bottom:1px solid var(--rule)}
+.fl:last-child{border-bottom:0; padding-bottom:2px}
+.fl>i{
+  flex:none; width:23px; height:23px; margin-top:2px; border-radius:50%;
+  background:var(--accent-soft); color:var(--accent);
+  font-family:'IBM Plex Mono',monospace; font-style:normal; font-size:12px; font-weight:500;
+  display:flex; align-items:center; justify-content:center;
+}
+.fl b{display:block; font-size:15px; font-weight:600; margin-bottom:3px}
+.fl p{margin:0; font-size:14px; line-height:1.55; color:var(--ink-2)}
+.fm .lbl{
+  margin:16px 0 2px; font-size:11px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--accent);
+}
+.fm>.lbl:first-child{margin-top:2px}
+.fm .ln{margin:4px 0 0; font-size:14.5px; line-height:1.6; color:var(--ink-2)}
+.const{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); padding:1px}
+.const>div{
+  background:var(--surface); padding:11px 12px; display:flex;
+  flex-direction:column; gap:2px; font-size:14px;
+}
+.const>div>span:first-child{font-size:11px; color:var(--ink-3); letter-spacing:.05em}
+/* ---------- list ---------- */
+
+.grp{margin:0 0 22px}
+.grp-h{
+  display:flex; align-items:baseline; gap:8px; margin:0 0 8px; padding:0 2px;
+}
+.grp-h b{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+.grp-h span{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-3)}
+.rows{display:flex; flex-direction:column; gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:12px; overflow:hidden; box-shadow:var(--shadow)}
+.row{
+  all:unset; cursor:pointer; display:flex; align-items:center; gap:12px;
+  background:var(--surface); padding:13px 14px; min-height:30px;
+}
+.row:active{background:var(--surface-2)}
+.row:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.num{
+  font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500;
+  color:var(--accent); background:var(--accent-soft);
+  padding:3px 7px; border-radius:6px; letter-spacing:-.02em; flex:none;
+  font-variant-numeric:tabular-nums;
+}
+.row .t{flex:1; min-width:0; font-size:15px; line-height:1.35; color:var(--ink); text-wrap:pretty}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--rule-2); flex:none}
+.row.done .dot{background:var(--done)}
+.row.done .t{color:var(--ink-2)}
+.row.nosol .num{color:var(--ink-3); background:var(--surface-2)}
+
+/* ---------- detail ---------- */
+#detail{display:none}
+#detail.on{display:block}
+#list.off{display:none}
+article{display:none}
+article.on{display:block}
+
+.meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px}
+.tag{font-size:11px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3)}
+.card{
+  background:var(--surface); border:1px solid var(--rule);
+  border-radius:14px; padding:18px 16px; box-shadow:var(--shadow);
+}
+.q{
+  font-family:'IBM Plex Serif',Georgia,'IBM Plex Sans KR',serif;
+  font-size:16.5px; line-height:1.62; color:var(--ink);
+}
+.q p{margin:0 0 .7em}
+.q p:last-child{margin-bottom:0}
+.q ol{margin:.6em 0 0; padding-left:1.3em}
+.q li{margin:.25em 0}
+.q em{font-style:italic}
+
+.reveal{
+  all:unset; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-top:14px; padding:15px; border-radius:12px;
+  background:var(--sol); color:var(--on-sol);
+  font-weight:600; font-size:16px; letter-spacing:.01em;
+  box-sizing:border-box;
+}
+.reveal:active{opacity:.82}
+.reveal:focus-visible{outline:2px solid var(--sol); outline-offset:3px}
+.reveal[hidden]{display:none}
+
+.s{
+  margin-top:14px; background:var(--surface); border:1px solid var(--rule);
+  border-left:3px solid var(--sol);
+  border-radius:12px; padding:16px 15px; box-shadow:var(--shadow);
+}
+.s-h{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--sol); margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--rule);
+}
+.hide{all:unset; cursor:pointer; font-size:11px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase; font-weight:600}
+.hide:focus-visible{outline:2px solid var(--sol); outline-offset:2px}
+.s p{margin:0 0 .6em; font-size:15.5px; line-height:1.65}
+.s p:last-child{margin-bottom:0}
+.s .step{color:var(--ink-2); font-size:14px}
+.s b.part{
+  display:inline-block; font-family:'IBM Plex Mono',monospace; font-weight:500;
+  color:var(--sol); margin-right:2px;
+}
+.s hr{border:0; border-top:1px solid var(--rule); margin:13px 0}
+.note{
+  margin-top:12px; padding:10px 12px; border-radius:9px;
+  background:var(--surface-2); color:var(--ink-2); font-size:13.5px; line-height:1.55;
+}
+.note b{color:var(--ink); font-weight:600}
+.note.warn{background:var(--warn-soft); border:1px solid var(--warn-line)}
+.note.warn b{color:var(--warn)}
+mjx-container{overflow-x:auto; overflow-y:hidden; max-width:100%}
+mjx-container[display="true"]{margin:.65em 0 !important; padding-bottom:2px}
+.tbl{overflow-x:auto; margin:10px 0 4px; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; font-family:'IBM Plex Mono',monospace; font-size:13px; font-variant-numeric:tabular-nums; white-space:nowrap}
+th,td{border:1px solid var(--rule); padding:6px 10px; text-align:right}
+th{background:var(--surface-2); color:var(--ink-2); font-weight:500; text-align:center}
+td:first-child,th:first-child{text-align:left}
+
+/* ---------- bottom nav ---------- */
+nav{display:flex; align-items:center; gap:8px}
+nav button{
+  all:unset; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  height:50px; border-radius:12px; background:var(--surface);
+  border:1px solid var(--rule); box-shadow:var(--shadow);
+  font-size:15px; font-weight:500; color:var(--ink);
+}
+nav button:active{background:var(--surface-2)}
+nav button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+nav button[disabled]{opacity:.38; cursor:default}
+.nav-side{flex:none; width:58px; font-size:19px; color:var(--accent)}
+.nav-mark{flex:1; gap:8px}
+.nav-mark .dot{width:9px; height:9px}
+.nav-mark.done{background:var(--done); border-color:var(--done); color:var(--on-done)}
+.nav-mark.done .dot{background:currentColor}
+
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+
+/* ===== 숲 패널 — 원본 규칙보다 뒤에 와야 이긴다 ===== */
+/* ===== 유리 패널 =====
+   backdrop-filter 는 그 자체가 backdrop root 를 만드니 바깥 한 겹에만 건다.
+   blur 는 얕게 두고 saturate/brightness/contrast 로 '쨍함'을 만든다. */
+:root{
+  --gl-hi:rgba(255,255,255,.70);   /* 윗면 스펙큘러 */
+  --gl-edge:rgba(255,255,255,.46); /* 테두리 */
+  --gl-lo:rgba(14,26,18,.12);      /* 아랫면 그림자선 */
+  --gl-cast:rgba(12,24,16,.20);    /* 드리운 그림자 */
+  --gl-on:#17230f;                 /* 초록 유리 위 글자 */
+  --sage:#627751;                  /* 사진에서 뽑은 숲색 */
+  --sage-on:#415b33;               /* 완료 상태 */
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --gl-hi:rgba(255,255,255,.20); --gl-edge:rgba(255,255,255,.15);
+  --gl-lo:rgba(0,0,0,.30); --gl-cast:rgba(0,0,0,.45); --gl-on:var(--ink);
+  --sage:#95a480; --sage-on:#b2c49a;
+}}
+:root[data-theme="dark"]{
+  --gl-hi:rgba(255,255,255,.20); --gl-edge:rgba(255,255,255,.15);
+  --gl-lo:rgba(0,0,0,.30); --gl-cast:rgba(0,0,0,.45); --gl-on:var(--ink);
+  --sage:#95a480; --sage-on:#b2c49a;
+}
+
+.card,.s,.rows,.seg{
+  backdrop-filter:blur(10px) saturate(195%) brightness(1.06) contrast(1.06);
+  -webkit-backdrop-filter:blur(10px) saturate(195%) brightness(1.06) contrast(1.06);
+}
+.card,.s,.rows{
+  border:1px solid var(--gl-edge);
+  box-shadow:
+    inset 0 1px 0 var(--gl-hi),
+    inset 1px 0 0 color-mix(in srgb,var(--gl-hi) 50%,transparent),
+    inset 0 -1px 0 var(--gl-lo),
+    0 1px 1px var(--gl-cast),
+    0 12px 32px var(--gl-cast);
+}
+/* 위에서 들어온 빛이 유리 표면을 훑는 느낌 */
+.card,.s{
+  background:
+    linear-gradient(158deg,
+      color-mix(in srgb,var(--surface) 40%,transparent) 0%,
+      color-mix(in srgb,var(--surface) 19%,transparent) 46%,
+      color-mix(in srgb,var(--surface) 28%,transparent) 100%);
+}
+.rows{
+  gap:0;
+  background:
+    linear-gradient(158deg,
+      color-mix(in srgb,var(--surface) 34%,transparent) 0%,
+      color-mix(in srgb,var(--surface) 14%,transparent) 50%,
+      color-mix(in srgb,var(--surface) 24%,transparent) 100%);
+}
+
+/* 안쪽 — 블러를 걸지 않는다(중첩 금지). 얇은 구분선만 */
+.row{background:transparent; border-top:1px solid color-mix(in srgb,var(--gl-hi) 34%,transparent)}
+.rows .row:first-child{border-top:0}
+.row:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
+.const>div{background:color-mix(in srgb,var(--surface) 26%,transparent)}
+.note{background:color-mix(in srgb,var(--surface-2) 30%,transparent);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gl-hi) 60%,transparent)}
+.note.warn{background:color-mix(in srgb,var(--warn-soft) 38%,transparent)}
+.num{background:color-mix(in srgb,var(--accent-soft) 46%,transparent);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gl-hi) 50%,transparent)}
+.fl>i{background:color-mix(in srgb,var(--accent-soft) 46%,transparent)}
+th{background:color-mix(in srgb,var(--surface-2) 32%,transparent)}
+.seg{background:color-mix(in srgb,var(--surface) 26%,transparent);
+  border:1px solid var(--gl-edge);
+  box-shadow:inset 0 1px 0 var(--gl-hi), 0 2px 10px var(--gl-cast)}
+nav{background:none}
+nav button{background:transparent; border-color:color-mix(in srgb,var(--ink) 22%,transparent);
+  box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none;
+  text-shadow:0 1px 3px var(--ground),0 0 10px var(--ground)}
+nav button:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
+
+/* ===== 숲색 유리 버튼 — 풀이 보기 · 복습 완료 ===== */
+.reveal,.nav-mark{
+  backdrop-filter:blur(10px) saturate(130%) brightness(1.05) contrast(1.04);
+  -webkit-backdrop-filter:blur(10px) saturate(130%) brightness(1.05) contrast(1.04);
+  border:1px solid color-mix(in srgb,var(--sage) 46%,transparent);
+  box-shadow:inset 0 1px 0 var(--gl-hi),
+             inset 0 -1px 0 var(--gl-lo),
+             0 1px 1px var(--gl-cast), 0 10px 26px var(--gl-cast);
+  color:var(--gl-on); text-shadow:none;
+}
+.reveal{
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--sage) 40%,transparent) 0%,
+    color-mix(in srgb,var(--sage) 24%,transparent) 48%,
+    color-mix(in srgb,var(--sage) 34%,transparent) 100%);
+}
+.reveal:active{background:color-mix(in srgb,var(--sage) 52%,transparent); opacity:1}
+.nav-mark{
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--sage) 28%,transparent) 0%,
+    color-mix(in srgb,var(--sage) 15%,transparent) 48%,
+    color-mix(in srgb,var(--sage) 23%,transparent) 100%);
+}
+.nav-mark .dot{background:color-mix(in srgb,var(--sage-on) 80%,transparent)}
+.nav-mark.done{
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--sage-on) 56%,transparent) 0%,
+    color-mix(in srgb,var(--sage-on) 40%,transparent) 48%,
+    color-mix(in srgb,var(--sage-on) 50%,transparent) 100%);
+  border-color:color-mix(in srgb,var(--sage-on) 66%,transparent);
+  color:var(--gl-on); text-shadow:none;
+}
+.nav-mark.done .dot{background:var(--gl-on)}
+.grp-h b,.grp-h span{text-shadow:0 1px 4px var(--ground),0 0 12px var(--ground)}
+
+/* ===== 태그 · 정렬 ===== */
+#ctrls{display:none; gap:8px; flex-wrap:wrap; padding:0 16px 14px; align-items:center}
+#ctrls.on{display:flex}
+.seg{display:flex; gap:2px; border-radius:10px; padding:2px;
+}
+.seg button{all:unset; cursor:pointer; padding:6px 11px; border-radius:8px; font-size:13px;
+  font-weight:500; color:var(--ink-3); white-space:nowrap; line-height:1.3}
+.seg button.on{background:var(--accent); color:var(--on-sol); font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.seg .n{font-family:'IBM Plex Mono',monospace; font-size:11px; opacity:.75; margin-left:4px}
+
+
+.row .star{flex:none; width:32px; height:32px; margin:-7px 2px -7px -5px;
+  border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:15px; line-height:1; cursor:pointer;
+  color:color-mix(in srgb,var(--ink-3) 50%,transparent); transition:color .12s,background .12s}
+.row .star.on{color:var(--warn)}
+.row .star:hover{background:color-mix(in srgb,var(--ink) 9%,transparent); color:var(--ink-2)}
+.row .star.on:hover{color:var(--warn)}
+.empty{padding:34px 16px; text-align:center; color:var(--ink-3); font-size:14.5px}
+
+/* ===== 앱 셸 — 문서가 아니라 앱처럼 ===== */
+html{height:100%}
+body{height:100%; overflow:hidden; display:flex; flex-direction:column}
+header{flex:none; position:static}
+main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:14px 16px calc(96px + env(safe-area-inset-bottom))}
+#ctrls{padding:0 0 14px}
+
+#bottombar{position:fixed; left:0; right:0; bottom:0; z-index:40;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,
+    color-mix(in srgb,var(--ground) 72%,transparent) 42%, transparent);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border-top:1px solid color-mix(in srgb,var(--gl-hi) 40%,transparent)}
+
+.tabs2{display:flex; gap:4px}
+.tabs2 button{all:unset; cursor:pointer; flex:1; display:flex; flex-direction:column;
+  align-items:center; gap:3px; padding:7px 4px 5px; border-radius:12px;
+  font-size:11px; font-weight:500; color:var(--ink-3); letter-spacing:.01em}
+.tabs2 button i{font-style:normal; font-size:17px; line-height:1}
+.tabs2 button.on{color:var(--sage-on)}
+.tabs2 button.on i{transform:translateY(-1px)}
+.tabs2 button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+#navbar2{display:none; align-items:center; gap:8px}
+#navbar2.on{display:flex}
+.tabs2.off{display:none}
+</style>
+
+<div id="photo" aria-hidden="true"></div>
+<div id="scrim" aria-hidden="true"></div>
+
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <button class="back" id="back" type="button">&#8249;&nbsp;목록</button>
+    <h1 id="ttl"><small>Cheng &middot; Ch.7</small>Plane Electromagnetic Waves</h1>
+    <span class="count" id="cnt"></span>
+  </div>
+  <div class="bar"><i id="prog"></i></div>
+</header>
+
+<main>
+<div id="ctrls"></div>
+<div id="list"></div>
+
+<div id="guide">
+
+<section class="grp">
+<div class="grp-h"><b>7장의 논리 흐름</b><span>왜 이 순서인가</span></div>
+<div class="card flow">
+<div class="fl"><i>1</i><div><b>맥스웰 방정식 → 파동방정식</b><p>발산·회전 관계를 한 변수로 정리하면 파동방정식이 나온다. 시간조화 가정을 넣으면 미분이 \(j\omega\)로 바뀌어 <b>헬름홀츠 방정식</b>이 되고, 여기서부터 모든 게 대수 계산이 된다.</p></div></div>
+<div class="fl"><i>2</i><div><b>무손실 균일평면파</b><p>해의 형태는 \(e^{-j\beta z}\). \(\mathbf{E}\), \(\mathbf{H}\), 진행방향이 서로 직교하고 비율이 \(\eta\)로 고정된다. 이 한 줄이 뒤의 모든 계산의 뼈대다.</p></div></div>
+<div class="fl"><i>3</i><div><b>편광</b><p>같은 평면파라도 \(x,y\) 두 성분의 <b>크기비와 위상차</b>에 따라 선형·원·타원으로 갈린다. 파동 자체의 물리는 그대로고 기술 방식만 늘어난다.</p></div></div>
+<div class="fl"><i>4</i><div><b>손실 매질</b><p>\(\sigma\ne0\)이면 \(k\)가 복소수 \(\gamma=\alpha+j\beta\)가 된다. \(\alpha\)가 감쇠, \(\beta\)가 위상. \(\eta\)도 복소수가 되어 \(\mathbf{E}\)와 \(\mathbf{H}\)의 <b>위상이 어긋난다.</b></p></div></div>
+<div class="fl"><i>5</i><div><b>전력 — 포인팅 벡터</b><p>파가 실어 나르는 전력을 \(\tfrac12\text{Re}(\mathbf{E}\times\mathbf{H}^*)\)로 센다. 경계면 문제에서 <b>에너지 보존 검산 도구</b>로 쓰인다.</p></div></div>
+<div class="fl"><i>6</i><div><b>경계면 — 수직 입사</b><p>매질이 바뀌면 \(\eta\)가 바뀌고, 경계조건을 맞추느라 반사파가 생긴다. \(\Gamma\)와 \(\tau\)는 \(\eta_1,\eta_2\)만의 함수.</p></div></div>
+<div class="fl"><i>7</i><div><b>경계면 — 사입사</b><p>비스듬히 들어오면 각도가 끼어든다. 스넬 법칙으로 \(\theta_t\)를 구하고, <b>편광 방향에 따라 공식이 두 벌</b>로 갈린다(⊥, ∥).</p></div></div>
+<div class="fl"><i>8</i><div><b>전반사 · 브루스터각</b><p>사입사 공식의 <b>특수해</b>다. \(\Gamma\)의 분자가 0이 되면 브루스터각, \(\sin\theta_t>1\)이 되면 전반사. 새로운 물리가 아니라 앞 식의 극단적 경우.</p></div></div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>A. 파동방정식과 전파상수</b><span>7-1</span></div>
+<div class="card fm">
+<p class="lbl">손실매질 파동방정식</p>
+\[\nabla^2\mathbf{E}-\mu\sigma\frac{\partial\mathbf{E}}{\partial t}-\mu\epsilon\frac{\partial^2\mathbf{E}}{\partial t^2}=0\]
+<p class="lbl">헬름홀츠 (시간조화)</p>
+\[\nabla^2\mathbf{E}-j\omega\mu\sigma\mathbf{E}+k^2\mathbf{E}=0,\qquad k=\omega\sqrt{\mu\epsilon}\]
+<p class="lbl">복소 전파상수</p>
+\[\gamma=\alpha+j\beta=j\omega\sqrt{\mu\epsilon}\sqrt{1-j\frac{\sigma}{\omega\epsilon}}\]
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>B. 균일평면파 기본 관계</b><span>7-3, 7-4</span></div>
+<div class="card fm">
+<p class="lbl">E와 H는 이 두 줄로 서로 넘나든다</p>
+\[\mathbf{H}=\frac{1}{\eta}\,\mathbf{a}_k\times\mathbf{E},\qquad \mathbf{E}=-\eta\,\mathbf{a}_k\times\mathbf{H}\]
+<p class="lbl">고유 임피던스</p>
+\[\eta=\sqrt{\frac{\mu}{\epsilon}},\qquad \eta_0=\sqrt{\frac{\mu_0}{\epsilon_0}}=120\pi\cong377\ (\Omega)\]
+<p class="lbl">속도 · 파장</p>
+\[u_p=\frac{\omega}{\beta},\qquad \lambda=\frac{2\pi}{\beta}=\frac{u_p}{f},\qquad u=\frac{c}{\sqrt{\mu_r\epsilon_r}}\]
+<div class="note"><b>\(\mathbf{a}_k\)의 방향만 틀리지 마세요.</b> 반사파는 \(\mathbf{a}_k\)가 반대이므로 \(\mathbf{H}\)의 부호가 뒤집힙니다. 7-14, 7-19, 7-20이 전부 이 지점에서 갈립니다.</div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>C. 편광</b><span>7-5, 7-6, 7-11</span></div>
+<div class="card fm">
+<p class="lbl">두 직교 성분의 크기비와 위상차 ψ로 결정</p>
+<div class="tbl"><table>
+<tr><th>조건</th><th>편광</th></tr>
+<tr><td>ψ = 0 또는 π</td><td>선형 (linear)</td></tr>
+<tr><td>크기 같고 ψ = ±π/2</td><td>원 (circular)</td></tr>
+<tr><td>그 외</td><td>타원 (elliptical)</td></tr>
+</table></div>
+<p class="lbl">타원 방정식 (일반형)</p>
+\[\Big(\frac{E_y}{E_{20}\sin\psi}\Big)^2+\Big(\frac{E_x}{E_{10}\sin\psi}\Big)^2-2\frac{E_xE_y}{E_{10}E_{20}}\frac{\cos\psi}{\sin^2\psi}=1\]
+<p class="lbl">회전 방향</p>
+<p class="ln">엄지를 <b>전파 방향</b>으로 두고 손가락이 감기는 쪽으로 \(\mathbf{E}\)가 돌면 우선(RH), 반대면 좌선(LH).</p>
+<div class="note">원편광의 <b>순시</b> 포인팅 벡터는 \(t\), \(z\)에 무관한 상수 \(E_0^2/\eta\)입니다(7-11). 선형편광은 \(\cos^2\)으로 맥동하는 것과 대조됩니다.</div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>D. 손실 매질</b><span>7-7 ~ 7-9, 7-15, 7-19</span></div>
+<div class="card fm">
+<p class="lbl">손실 탄젠트 — 어느 근사를 쓸지 여기서 결정</p>
+\[\tan\delta_c=\frac{\epsilon''}{\epsilon'}=\frac{\sigma}{\omega\epsilon}\]
+<p class="lbl">저손실 유전체 \((\epsilon''/\epsilon'\ll1)\)</p>
+\[\alpha\cong\frac{\omega\epsilon''}{2}\sqrt{\frac{\mu}{\epsilon'}}\tag{7-47}\]
+\[\beta\cong\omega\sqrt{\mu\epsilon'}\Big[1+\frac18\Big(\frac{\epsilon''}{\epsilon'}\Big)^2\Big]\tag{7-48}\]
+\[\eta_c\cong\sqrt{\frac{\mu}{\epsilon'}}\Big(1+j\frac{\epsilon''}{2\epsilon'}\Big)\tag{7-49}\]
+<p class="lbl">양도체 \((\sigma/\omega\epsilon\gg1)\)</p>
+\[\alpha=\beta=\sqrt{\pi f\mu\sigma}=\frac1\delta,\qquad \delta=\frac{1}{\sqrt{\pi f\mu\sigma}}\]
+\[\eta_c=(1+j)\frac{\alpha}{\sigma}=(1+j)\frac{1}{\sigma\delta}=\sqrt{\frac{\pi f\mu}{\sigma}}(1+j)\]
+<p class="lbl">단위 환산</p>
+\[1\ \text{Np}=8.686\ \text{dB},\qquad 20\log_{10}e^{-\alpha z}=-8.686\,\alpha z\ \text{(dB)}\]
+<div class="note"><b>순서를 지키세요.</b> ① \(\sigma/\omega\epsilon\) 먼저 계산 → ② 저손실인지 양도체인지 판정 → ③ 해당 근사식 적용. 7-15는 62.8이 나와 양도체, 7-7은 0.05라 저손실입니다.</div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>E. 전력 — 포인팅 벡터</b><span>7-10 ~ 7-13</span></div>
+<div class="card fm">
+\[\boldsymbol{\mathcal{P}}=\mathbf{E}\times\mathbf{H}\quad\text{(순시)},\qquad \boldsymbol{\mathcal{P}}_{av}=\tfrac12\text{Re}\big(\mathbf{E}\times\mathbf{H}^*\big)\]
+<p class="lbl">TEM파의 평균 전력밀도</p>
+\[\mathcal{P}_{av}=\frac{|E|^2}{2\eta}=\frac{\eta|H|^2}{2}\qquad\longrightarrow\qquad |E|=\sqrt{2\eta\mathcal{P}_{av}}\]
+<p class="lbl">손실매질 (\(\eta_c\)가 복소수일 때)</p>
+\[\mathcal{P}_{av}=\frac{|E_0|^2}{2|\eta_c|}e^{-2\alpha z}\cos\theta_\eta\]
+<div class="note">경계면 문제에서 \(z=0\) 양쪽의 \(\mathcal{P}_{av}\)가 같은지 보면 <b>답 검산</b>이 됩니다. 7-19에서 양쪽 다 0.127 W/m²로 맞아떨어집니다.</div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>F. 수직 입사</b><span>7-14 ~ 7-19</span></div>
+<div class="card fm">
+\[\Gamma=\frac{E_{r0}}{E_{i0}}=\frac{\eta_2-\eta_1}{\eta_2+\eta_1},\qquad \tau=\frac{E_{t0}}{E_{i0}}=\frac{2\eta_2}{\eta_2+\eta_1}\]
+\[\boxed{\ 1+\Gamma=\tau\ }\]
+<p class="lbl">H장은 부호가 반대</p>
+\[\frac{H_{r0}}{H_{i0}}=-\Gamma,\qquad \frac{H_{t0}}{H_{i0}}=\frac{\eta_1}{\eta_2}\tau=\frac{2\eta_1}{\eta_2+\eta_1}\]
+<p class="lbl">정재파비</p>
+\[S=\frac{1+|\Gamma|}{1-|\Gamma|},\qquad S_{dB}=20\log_{10}S\]
+<p class="lbl">극단적인 경우</p>
+<div class="tbl"><table>
+<tr><th>상황</th><th>Γ</th><th>결과</th></tr>
+<tr><td>완전도체 (η₂=0)</td><td>−1</td><td>완전 정재파, S=∞</td></tr>
+<tr><td>정합 (η₂=η₁)</td><td>0</td><td>반사 없음, S=1</td></tr>
+<tr><td>η₂&gt;η₁</td><td>&gt;0</td><td>E 반사파 동상</td></tr>
+</table></div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>G. 사입사</b><span>7-20 ~ 7-25</span></div>
+<div class="card fm">
+<p class="lbl">스넬 법칙</p>
+\[\theta_r=\theta_i,\qquad \frac{\sin\theta_t}{\sin\theta_i}=\frac{\sqrt{\mu_1\epsilon_1}}{\sqrt{\mu_2\epsilon_2}}=\frac{n_1}{n_2}\]
+<p class="lbl">수직편파 ⊥ (E가 입사면에 수직)</p>
+\[\Gamma_\perp=\frac{\eta_2\cos\theta_i-\eta_1\cos\theta_t}{\eta_2\cos\theta_i+\eta_1\cos\theta_t},\qquad \tau_\perp=\frac{2\eta_2\cos\theta_i}{\eta_2\cos\theta_i+\eta_1\cos\theta_t}\]
+\[\tau_\perp=1+\Gamma_\perp\]
+<p class="lbl">평행편파 ∥ (E가 입사면 안에)</p>
+\[\Gamma_\parallel=\frac{\eta_2\cos\theta_t-\eta_1\cos\theta_i}{\eta_2\cos\theta_t+\eta_1\cos\theta_i},\qquad \tau_\parallel=\frac{2\eta_2\cos\theta_i}{\eta_2\cos\theta_t+\eta_1\cos\theta_i}\]
+\[\tau_\parallel=(1+\Gamma_\parallel)\frac{\cos\theta_i}{\cos\theta_t}\]
+<div class="note warn"><b>가장 많이 틀리는 지점.</b> ⊥는 \(\tau=1+\Gamma\)로 끝나지만 <b>∥는 \(\cos\theta_i/\cos\theta_t\)가 곱해집니다.</b> 두 경우 모두 분자의 \(\cos\theta_i\)를 빠뜨리기 쉽습니다. 실제로 이 문제집 7-25의 공식 해답이 바로 이 \(\cos\theta_i\)를 빠뜨렸습니다.</div>
+<p class="lbl">외우는 법</p>
+<p class="ln">분모를 보세요. <b>⊥는 \(\cos\theta_i\)가 \(\eta_2\)에 붙고, ∥는 \(\cos\theta_t\)가 \(\eta_2\)에 붙습니다.</b> 분자는 둘 다 분모의 두 항을 뺀 형태, 투과 분자는 둘 다 \(2\eta_2\cos\theta_i\)로 같습니다.</p>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>H. 전반사 · 브루스터각</b><span>7-26 ~ 7-33</span></div>
+<div class="card fm">
+<p class="lbl">임계각 — 밀한 매질에서 성긴 매질로 갈 때만 존재</p>
+\[\theta_c=\sin^{-1}\sqrt{\frac{\epsilon_2}{\epsilon_1}}=\sin^{-1}\frac{n_2}{n_1}\qquad(\epsilon_2&lt;\epsilon_1)\]
+<p class="lbl">브루스터각 — 반사가 0이 되는 각</p>
+\[\theta_{B\parallel}=\tan^{-1}\sqrt{\frac{\epsilon_2}{\epsilon_1}},\qquad \theta_t+\theta_B=\frac{\pi}{2}\]
+\[\sin\theta_c=\tan\theta_{B\parallel}\quad\text{(7-33)}\]
+<p class="lbl">전반사 시 \(\theta_i&gt;\theta_c\)</p>
+\[\sin\theta_t&gt;1,\qquad \cos\theta_t=-j\sqrt{\Big(\frac{\epsilon_1}{\epsilon_2}\Big)\sin^2\theta_i-1}\]
+\[\alpha_2=\beta_2\sqrt{\Big(\frac{\epsilon_1}{\epsilon_2}\Big)\sin^2\theta_i-1},\qquad |\Gamma|=1,\ \ \mathcal{P}_{av,z}=0\]
+<p class="lbl">광섬유 개구수</p>
+\[\text{N.A.}=\sin\theta_a=\frac{1}{n_0}\sqrt{n_1^2-n_2^2}\]
+<div class="note"><b>\(\cos\theta_t\)가 허수가 되는 순간</b>부터 전반사입니다. \(|\Gamma|=1\)이지만 위상은 편광에 따라 달라지고, 매질 2에는 <b>소멸파</b>가 스며들되 깊이 방향 전력은 0입니다.</div>
+</div>
+</section>
+
+<section class="grp">
+<div class="grp-h"><b>상수</b><span>계산 전 확인</span></div>
+<div class="card fm const">
+<div><span>\(c\)</span><span>\(3\times10^8\) m/s</span></div>
+<div><span>\(\eta_0\)</span><span>\(120\pi\cong377\ \Omega\)</span></div>
+<div><span>\(\mu_0\)</span><span>\(4\pi\times10^{-7}\) H/m</span></div>
+<div><span>\(\epsilon_0\)</span><span>\(\frac{1}{36\pi}\times10^{-9}\) F/m</span></div>
+<div><span>1 Np</span><span>8.686 dB</span></div>
+<div><span>음속</span><span>343 m/s (1 Mach)</span></div>
+</div>
+</section>
+
+</div>
+
+<div id="detail">
+<!-- ============ 1. 파동방정식 · TEM · 도플러 ============ -->
+
+<article data-n="7-1" data-g="1" data-t="손실매질 파동방정식 → 헬름홀츠">
+<div class="card"><div class="q">
+<p>(a) Obtain the wave equations governing the <em>E</em> and <em>H</em> fields in a source-free conducting medium with constitutive parameters \(\epsilon\), \(\mu\), and \(\sigma\).</p>
+<p>(b) Obtain the corresponding Helmholtz's equations for time-harmonic fields.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> Eq.(7&#8209;62):</p>
+\[\nabla\times\mathbf{H}=\mathbf{J}+\frac{\partial\mathbf{D}}{\partial t}=\sigma\mathbf{E}+\epsilon\frac{\partial\mathbf{E}}{\partial t}\quad\text{(1)}\]
+<p class="step">Eqs.(5&#8209;16a) &amp; (7&#8209;61):</p>
+\[\nabla\times\nabla\times\mathbf{E}=\nabla(\nabla\cdot\mathbf{E})-\nabla^2\mathbf{E}=-\mu\frac{\partial}{\partial t}(\nabla\times\mathbf{H})\quad\text{(2)}\]
+<p class="step">(1)을 (2)에 대입하고 \(\nabla\cdot\mathbf{E}=0\)을 쓰면, 손실매질의 파동방정식:</p>
+\[\nabla^2\mathbf{E}-\mu\sigma\frac{\partial\mathbf{E}}{\partial t}-\mu\epsilon\frac{\partial^2\mathbf{E}}{\partial t^2}=0\quad\text{(3)}\]
+<p class="step">\(\mathbf{H}\)도 같은 형태.</p>
+<hr>
+<p><b class="part">(b)</b> 시간조화장에서 \(\dfrac{\partial}{\partial t}\to j\omega\), \(\dfrac{\partial^2}{\partial t^2}\to-\omega^2\). (3)이 헬름홀츠 방정식으로:</p>
+\[\nabla^2\mathbf{E}-j\omega\mu\sigma\mathbf{E}+k^2\mathbf{E}=0,\qquad k=\omega\sqrt{\mu\epsilon}\]
+</div></article>
+
+<article data-n="7-2" data-g="1" data-t="도플러 레이더 — 거리·고도·속도">
+<div class="card"><div class="q">
+<p>A 1-(GHz) Doppler radar on the ground is used to determine the location and speed of an approaching airplane. Assuming that the signal reflected from the airplane at an elevation angle of 15.5° showed a time delay of 0.3 (ms) and a frequency shift of 2.64 (kHz), find the distance, height, and speed of the airplane.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">왕복 지연이므로</p>
+\[\Delta t=\frac{2R}{c}=0.3\times10^{-3}\ \text{(s)}\]
+\[R=\frac{\Delta t}{2}c=\frac{0.3\times10^{-3}}{2}\times3\times10^8=45\times10^3\ \text{(m)}=45\ \text{(km)}\]
+\[h=R\sin\theta=45\times10^3\sin15.5^\circ=12\times10^3\ \text{(m)}=12\ \text{(km)}\]
+<p class="step">도플러 편이:</p>
+\[\Delta f=2f\Big(\frac{u}{c}\Big)\cos15.5^\circ\]
+\[u=\frac{c\,\Delta f}{2f\cos15.5^\circ}=410.8\ \text{(m/s)}\approx1.2\ \text{Mach}\]
+</div></article>
+
+<article data-n="7-3" data-g="1" data-t="TEM파의 E–H 일반 관계식">
+<div class="card"><div class="q">
+<p>Obtain a general formula that expresses the phasor <em>E</em>(R) in terms of the phasor <em>H</em>(R) of a TEM wave and the intrinsic impedance of the medium, where R is the radius vector.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">\(\mathbf{H}(R)\)가 다음 형태라고 두면</p>
+\[\mathbf{H}(R)=\mathbf{H}_0\,e^{-jk\,\mathbf{a}_k\cdot R}\]
+<p class="step">Eq.(6&#8209;50b)에서</p>
+\[\mathbf{E}(R)=\frac{1}{j\omega\epsilon}\nabla\times\mathbf{H}(R)=\frac{1}{j\omega\epsilon}(-jk)\,\mathbf{a}_k\times\mathbf{H}(R)\]
+\[=-\frac{1}{\omega\epsilon}\big(\omega\sqrt{\mu\epsilon}\big)\,\mathbf{a}_k\times\mathbf{H}(R)\]
+<p class="step">따라서</p>
+\[\boxed{\ \mathbf{E}(R)=-\eta\,\mathbf{a}_k\times\mathbf{H}(R)\ }\]
+<div class="note"><b>이 결과는 7-4에서 그대로 쓰입니다.</b> 전파방향 \(\mathbf{a}_k\)와 \(\mathbf{H}\)만 알면 \(\mathbf{E}\)가 바로 나옵니다.</div>
+</div></article>
+
+<article data-n="7-4" data-g="1" data-t="+y 진행 균일평면파 — k₀와 E">
+<div class="card"><div class="q">
+<p>The instantaneous expression for the magnetic field intensity of a uniform plane wave propagating in the +<em>y</em> direction in air is given by</p>
+\[\mathbf{H}=\mathbf{a}_z\,4\times10^{-6}\cos\!\big(10^7\pi t-k_0y+\tfrac{\pi}{4}\big)\ \text{(A/m)}\]
+<ol type="a"><li>Determine \(k_0\) and the location where \(H_z\) vanishes at \(t=3\) (ms).</li>
+<li>Write the instantaneous expression for <em>E</em>.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b></p>
+\[k_0=\omega\sqrt{\mu_0\epsilon_0}=\frac{10^7\pi}{3\times10^8}=\frac{\pi}{30}=0.105\ \text{(rad/m)}\]
+\[\lambda=2\pi/k_0=60\ \text{(m)}\]
+<p class="step">\(t=3\times10^{-3}\)(s)에서 코사인의 인수가 \(H_z=0\)이 되려면</p>
+\[10^7\pi(3\times10^{-3})-\frac{\pi}{30}y+\frac{\pi}{4}=\pm n\pi+\frac{\pi}{2},\quad n=0,1,2,\dots\]
+\[y=\pm30n-7.5\ \text{(m)}=22.5\pm n\lambda/2\ \text{(m)}\]
+<hr>
+<p><b class="part">(b)</b> cosine 기준 페이저:</p>
+\[\mathbf{H}=\mathbf{a}_z\,4\times10^{-6}e^{j(-k_0y+\pi/4)}\ \text{(A/m)}\]
+<p class="step">P.7&#8209;3의 결과 \(\mathbf{E}=-\eta\,\mathbf{a}_k\times\mathbf{H}\)에 \(\mathbf{a}_k=\mathbf{a}_y\)를 넣으면</p>
+\[\mathbf{E}=-\eta_0\,\mathbf{a}_y\times\mathbf{a}_z\,4\times10^{-6}e^{j(-k_0y+\pi/4)}\]
+\[=-\mathbf{a}_x\,4\times10^{-6}\eta_0\,e^{j(-0.105y+\pi/4)}=-\mathbf{a}_x\,1.51\times10^{-3}e^{j(-0.105y+\pi/4)}\ \text{(V/m)}\]
+<p class="step">순시식:</p>
+\[\mathbf{E}(y,t)=-\mathbf{a}_x\,1.51\cos\!\big(10^7\pi t-0.105y+\tfrac{\pi}{4}\big)\ \text{(mV/m)}\]
+</div></article>
+
+<!-- ============ 2. 편광 ============ -->
+
+<article data-n="7-5" data-g="2" data-t="좌선 타원편광 — f, εᵣ, H 구하기">
+<div class="card"><div class="q">
+<p>The <em>E</em>-field of a uniform plane wave propagating in a dielectric medium is given by</p>
+\[\mathbf{E}(t,z)=\mathbf{a}_x2\cos\!\big(10^8t-z/\sqrt3\big)-\mathbf{a}_y\sin\!\big(10^8t-z/\sqrt3\big)\ \text{(V/m)}\]
+<ol type="a"><li>Determine the frequency and wavelength of the wave.</li>
+<li>What is the dielectric constant of the medium?</li>
+<li>Describe the polarization of the wave.</li>
+<li>Find the corresponding <em>H</em>-field.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">cosine 기준 페이저로 바꾸면 \(-\sin\theta=\cos(\theta+\pi/2)\)이므로</p>
+\[\mathbf{E}(z)=\mathbf{a}_x2e^{-jz/\sqrt3}+\mathbf{a}_y\,j\,e^{-jz/\sqrt3}\ \text{(V/m)}\]
+<p><b class="part">(a)</b> \(\omega=10^8\) (rad/s) \(\Rightarrow f=10^8/2\pi=1.59\times10^7\) (Hz)</p>
+\[\beta=1/\sqrt3\ \text{(rad/m)}\Rightarrow\lambda=2\pi/\beta=2\sqrt3\,\pi\ \text{(m)}\]
+<p><b class="part">(b)</b> \(u=\dfrac{c}{\sqrt{\epsilon_r}}=\dfrac{\omega}{\beta}\Rightarrow\epsilon_r=\Big(\dfrac{\beta c}{\omega}\Big)^2=3\)</p>
+<p><b class="part">(c)</b> 좌선 타원편광 (left-hand elliptically polarized)</p>
+<p><b class="part">(d)</b></p>
+\[\eta=\sqrt{\mu/\epsilon}=\frac{120\pi}{\sqrt{\epsilon_r}}=\frac{120\pi}{\sqrt3}\ (\Omega)\]
+\[\mathbf{H}=\frac{1}{\eta}\mathbf{a}_z\times\mathbf{E}=\frac{\sqrt3}{120\pi}\big(\mathbf{a}_y2e^{-jz/\sqrt3}-\mathbf{a}_x\,j\,e^{-jz/\sqrt3}\big)\]
+\[\mathbf{H}(z,t)=\frac{\sqrt3}{120\pi}\Big[\mathbf{a}_x\sin\!\big(10^8t-z/\sqrt3\big)+\mathbf{a}_y2\cos\!\big(10^8t-z/\sqrt3\big)\Big]\ \text{(A/m)}\]
+</div></article>
+
+<article data-n="7-6" data-g="2" data-t="타원편광 증명">
+<div class="card"><div class="q">
+<p>Show that a plane wave with an instantaneous expression for the electric field</p>
+\[\mathbf{E}(z,t)=\mathbf{a}_xE_{10}\sin(\omega t-kz)+\mathbf{a}_yE_{20}\sin(\omega t-kz+\psi)\]
+<p>is elliptically polarized.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">\(\alpha=\omega t-kz\)로 놓으면</p>
+\[\mathbf{E}=\mathbf{a}_xE_{10}\sin\alpha+\mathbf{a}_yE_{20}\sin(\alpha+\psi)=\mathbf{a}_xE_x+\mathbf{a}_yE_y\]
+\[\frac{E_x}{E_{10}}=\sin\alpha\]
+\[\frac{E_y}{E_{20}}=\sin(\alpha+\psi)=\sin\alpha\cos\psi+\cos\alpha\sin\psi=\frac{E_x}{E_{10}}\cos\psi+\sqrt{1-\Big(\frac{E_x}{E_{10}}\Big)^2}\,\sin\psi\]
+<p class="step">이항 후 제곱하면</p>
+\[\Big(\frac{E_y}{E_{20}}-\frac{E_x}{E_{10}}\cos\psi\Big)^2=\Big[1-\Big(\frac{E_x}{E_{10}}\Big)^2\Big]\sin^2\psi\]
+<p class="step">정리하면</p>
+\[\Big(\frac{E_y}{E_{20}\sin\psi}\Big)^2+\Big(\frac{E_x}{E_{10}\sin\psi}\Big)^2-2\frac{E_xE_y}{E_{10}E_{20}}\frac{\cos\psi}{\sin^2\psi}=1\]
+<p class="step">이는 \(E_x\text{–}E_y\) 평면에서 타원의 방정식이다. ∎</p>
+</div></article>
+
+<article data-n="7-11" data-g="2" data-t="원편광의 순시 포인팅 벡터는 상수">
+<div class="card"><div class="q">
+<p>Show that the instantaneous Poynting vector of a circularly polarized plane wave propagating in a lossless medium is a constant that is independent of time and distance.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">원편광 평면파를 가정하면</p>
+\[\mathbf{E}(z,t)=\mathbf{a}_xE_0\cos(\omega t-kz+\phi)+\mathbf{a}_yE_0\sin(\omega t-kz+\phi)\]
+\[\mathbf{H}(z,t)=\mathbf{a}_y\frac{E_0}{\eta}\cos(\omega t-kz+\phi)-\mathbf{a}_x\frac{E_0}{\eta}\sin(\omega t-kz+\phi)\]
+<p class="step">포인팅 벡터:</p>
+\[\boldsymbol{\mathcal{P}}=\mathbf{E}\times\mathbf{H}=\mathbf{a}_z\frac{E_0^2}{\eta}\Big[\cos^2(\omega t-kz+\phi)+\sin^2(\omega t-kz+\phi)\Big]\]
+\[=\mathbf{a}_z\frac{E_0^2}{\eta}\]
+<p class="step">즉 \(t\)와 \(z\)에 무관한 상수. ∎</p>
+</div></article>
+
+<!-- ============ 3. 손실매질 · 표피효과 ============ -->
+
+<article data-n="7-7" data-g="3" data-t="손실 유전체 — 반감거리·η_c·u_p·u_g">
+<div class="card"><div class="q">
+<p>A 3-(GHz), <em>y</em>-polarized uniform plane wave propagates in the +<em>x</em>-direction in a nonmagnetic medium having a dielectric constant 2.5 and a loss tangent 0.05.</p>
+<ol type="a"><li>Determine the distance over which the amplitude of the propagating wave will be cut in half.</li>
+<li>Determine the intrinsic impedance, the wavelength, the phase velocity, and the group velocity of the wave in the medium.</li>
+<li>Assuming \(\mathbf{E}=\mathbf{a}_y50\sin(6\pi\times10^9t+\pi/3)\) (V/m) at \(x=0\), write the instantaneous expression for <em>H</em> for all \(t\) and \(x\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">주어진 값: \(f=3\times10^9\) (Hz), \(\epsilon_r=2.5\), \(\tan\delta_c=\epsilon''/\epsilon'=0.05\)</p>
+<p><b class="part">(a)</b> Eq.(7&#8209;47):</p>
+\[\alpha=\frac{\omega\epsilon''}{2}\sqrt{\frac{\mu}{\epsilon'}}=\frac{\omega}{2}\Big(\frac{\epsilon''}{\epsilon'}\Big)\frac{\sqrt{\epsilon_r}}{c}=2.48\ \text{(Np/m)}\]
+\[e^{-\alpha x}=\tfrac12\ \longrightarrow\ x=\frac{1}{\alpha}\ln2=0.279\ \text{(m)}\]
+<hr>
+<p><b class="part">(b)</b> Eq.(7&#8209;49):</p>
+\[\eta_c=\frac{1}{\sqrt{\epsilon_r}}\sqrt{\frac{\mu_0}{\epsilon_0}}\Big(1+j\frac{\epsilon''}{2\epsilon'}\Big)=238\underline{/1.43^\circ}\ (\Omega)=238\underline{/0.008\pi}\ (\Omega)\]
+<p class="step">Eq.(7&#8209;48):</p>
+\[\beta=\omega\sqrt{\mu\epsilon}\Big[1+\frac18\Big(\frac{\epsilon''}{\epsilon'}\Big)^2\Big]=31.6\pi\ \text{(rad/m)}\]
+\[\lambda=\frac{2\pi}{\beta}=0.063\ \text{(m)}\]
+\[u_p=\frac{\omega}{\beta}=1.897\times10^8\ \text{(m/s)}\]
+\[u_g=\frac{1}{d\beta/d\omega}=\frac{c}{\sqrt{\epsilon_r}}\Big[1+\frac18\Big(\frac{\epsilon''}{\epsilon'}\Big)^2\Big]=1.898\times10^8\ \text{(m/s)}\]
+<hr>
+<p><b class="part">(c)</b> \(x=0\)에서 \(\mathbf{E}=\mathbf{a}_ye^{j\pi/3}\) (진폭 50), </p>
+\[\mathbf{H}=\frac{1}{\eta_c}\mathbf{a}_x\times\mathbf{E}=\mathbf{a}_z\,0.210\,e^{j(\pi/3-0.008\pi)}\]
+\[\mathbf{H}(x,t)=\mathbf{a}_z\,0.210\,e^{-2.48x}\sin\!\big(6\pi\times10^9t-31.6\pi x+0.325\pi\big)\ \text{(A/m)}\]
+<div class="note"><b>포인트.</b> \(\eta_c\)의 위상각 \(0.008\pi\)만큼 \(\mathbf{H}\)가 \(\mathbf{E}\)보다 뒤처집니다. 손실매질에서 E와 H가 동위상이 아닌 이유.</div>
+</div></article>
+
+<article data-n="7-8" data-g="3" data-t="구리·황동의 η_c, α, 표피깊이 비교">
+<div class="card"><div class="q">
+<p>Determine and compare the intrinsic impedance, attenuation constant (in both Np/m and dB/m), and skin depth of copper \([\sigma_{cu}=5.80\times10^7\ \text{(S/m)}]\), and brass \([\sigma_{br}=1.59\times10^7\ \text{(S/m)}]\) at the following frequencies: (a) 1 (MHz), and (b) 1 (GHz).</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">구리와 황동 모두 양도체이므로 \((\sigma/\omega\epsilon)^2\gg1\):</p>
+\[\alpha=\sqrt{\pi f\mu\sigma},\qquad \delta=\frac1\alpha,\qquad \eta_c=(1+j)\frac{\alpha}{\sigma}\]
+<p><b class="part">(a)</b> \(f=1\) (MHz)</p>
+<div class="tbl"><table>
+<tr><th></th><th>η<sub>c</sub> (Ω)</th><th>α (Np/m)</th><th>α (dB/m)</th><th>δ (m)</th></tr>
+<tr><td>Copper</td><td>2.61(1+j)&times;10⁻⁴</td><td>1.51&times;10⁴</td><td>1.31&times;10⁵</td><td>6.61&times;10⁻⁵</td></tr>
+<tr><td>Brass</td><td>4.98(1+j)&times;10⁻⁴</td><td>0.79&times;10⁴</td><td>0.69&times;10⁵</td><td>12.6&times;10⁻⁵</td></tr>
+</table></div>
+<p><b class="part">(b)</b> \(f=1\) (GHz)</p>
+<div class="tbl"><table>
+<tr><th></th><th>η<sub>c</sub> (Ω)</th><th>α (Np/m)</th><th>α (dB/m)</th><th>δ (m)</th></tr>
+<tr><td>Copper</td><td>8.25(1+j)&times;10⁻³</td><td>4.79&times;10⁵</td><td>4.16&times;10⁶</td><td>2.09&times;10⁻⁶</td></tr>
+<tr><td>Brass</td><td>1.58(1+j)&times;10⁻²</td><td>2.51&times;10⁵</td><td>2.18&times;10⁶</td><td>3.99&times;10⁻⁶</td></tr>
+</table></div>
+<div class="note">주파수가 1000배 오르면 \(\alpha\propto\sqrt f\)로 약 31.6배 커지고 \(\delta\)는 그만큼 얇아집니다.</div>
+</div></article>
+
+<article data-n="7-9" data-g="3" data-t="흑연의 σ와 30dB 감쇠 거리">
+<div class="card"><div class="q">
+<p>Given that the skin depth for graphite at 100 (MHz) is 0.16 (mm), determine (a) the conductivity of graphite, and (b) the distance that a 1-(GHz) wave travels in graphite such that its field intensity is reduced by 30 (dB).</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b></p>
+\[\delta=\frac{1}{\sqrt{\pi f\mu\sigma}}\ \longrightarrow\ \sigma=\frac{1}{\pi f\mu\delta^2}=0.99\times10^5\ \text{(S/m)}\]
+<p><b class="part">(b)</b> \(f=10^9\) (Hz)에서</p>
+\[\alpha=\sqrt{\pi f\mu\sigma}=1.98\times10^4\ \text{(Np/m)}\]
+\[20\log_{10}e^{-\alpha z}=-30\ \text{(dB)}\ \longrightarrow\ z=\frac{1.5}{\alpha\log_{10}e}=1.75\times10^{-4}\ \text{(m)}=0.175\ \text{(mm)}\]
+</div></article>
+
+<article data-n="7-15" data-g="3" data-t="해수 속 전파 — 표피깊이·손실전력">
+<div class="card"><div class="q">
+<p>A uniform plane wave propagates in the +<em>z</em>-(downward) direction into the ocean \((\epsilon_r=72,\ \mu_r=1,\ \sigma=4\ \text{S/m})\). The magnetic field at the ocean surface \((z=0)\) is \(\mathbf{H}(0,t)=\mathbf{a}_y0.3\cos10^8t\) (A/m).</p>
+<ol type="a"><li>Determine the skin depth and the intrinsic impedance of the ocean water.</li>
+<li>Find the expressions of \(\mathbf{E}(z,t)\) and \(\mathbf{H}(z,t)\) in the ocean.</li>
+<li>Find the average power loss per unit area in the ocean as a function of \(z\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">먼저 양도체 여부 확인:</p>
+\[\frac{\sigma}{\omega\epsilon}=\frac{4}{10^8\times72\times\frac{1}{36\pi}\times10^{-9}}=20\pi\gg1\quad\text{(양도체)}\]
+<p><b class="part">(a)</b></p>
+\[\delta=\frac{1}{\sqrt{\pi f\mu_0\sigma}}=0.063\ \text{(m)}=6.3\ \text{(cm)}=\frac1\alpha\ \Rightarrow\ \alpha=15.85\]
+\[\eta_c=(1+j)\frac{\alpha}{\sigma}=3.96(1+j)=5.60\,e^{j\pi/4}\ (\Omega)\]
+<p><b class="part">(b)</b></p>
+\[\mathbf{H}(z,t)=\mathbf{a}_y0.3\,e^{-15.85z}\cos(10^8t-15.85z)\ \text{(A/m)}\]
+\[\mathbf{E}(z)=-\eta_c\,\mathbf{a}_z\times\mathbf{H}(z)\ \longrightarrow\ \mathbf{E}(z,t)=\mathbf{a}_x1.68\,e^{-15.85z}\cos\!\big(10^8t-15.85z+\tfrac{\pi}{4}\big)\ \text{(V/m)}\]
+<p><b class="part">(c)</b></p>
+\[\boldsymbol{\mathcal{P}}_{av}=\tfrac12\text{Re}(\mathbf{E}\times\mathbf{H}^*)=\mathbf{a}_z\frac{1.68\times0.3}{2}e^{-31.7z}\cos\frac{\pi}{4}=\mathbf{a}_z\,0.178\,e^{-31.7z}\ \text{(W/m}^2)\]
+<div class="note"><b>왜 잠수함 통신에 초저주파를 쓰는가.</b> \(\delta=6.3\) cm라 100 MHz는 수십 cm에서 사실상 소멸합니다.</div>
+</div></article>
+
+<!-- ============ 4. 전력 · 포인팅 벡터 ============ -->
+
+<article data-n="7-10" data-g="4" data-t="전자파 인체 안전기준 — E·H 환산">
+<div class="card"><div class="q">
+<p>There is a continuing discussion on radiation hazards to human health. The following calculations provide a rough comparison.</p>
+<ol type="a"><li>The U.S. standard for personal safety in a microwave environment is that the power density be less than 10 (mW/cm²). Calculate the corresponding standard in terms of electric field intensity. In terms of magnetic field intensity.</li>
+<li>It is estimated that the earth receives radiant energy from the sun at a rate of about 1.3 (kW/m²) on a sunny day. Assuming a monochromatic plane wave (which it is not), calculate the equivalent amplitudes of the electric and magnetic field intensity vectors.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> \(\mathcal{P}_{av}=|E|^2/2\eta_0=10^{-2}\) (W/cm²)</p>
+\[|E|=\sqrt{0.02\,\eta_0}=2.75\ \text{(V/cm)}=275\ \text{(V/m)}\]
+\[|H|=\frac{|E|}{\eta_0}=7.28\times10^{-3}\ \text{(A/cm)}=0.728\ \text{(A/m)}\]
+<p><b class="part">(b)</b> \(\mathcal{P}_{av}=|E|^2/2\eta_0=1300\) (W/m²)</p>
+\[|E|=990\ \text{(V/m)},\qquad |H|=2.63\ \text{(A/m)}\]
+</div></article>
+
+<article data-n="7-12" data-g="4" data-t="안테나 복사 — 평균 전력밀도">
+<div class="card"><div class="q">
+<p>Assuming that the radiation electric field intensity of an antenna system is</p>
+\[\mathbf{E}=\mathbf{a}_\theta E_\theta+\mathbf{a}_\phi E_\phi\]
+<p>find the expression for the average outward power flow per unit area.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+\[\mathbf{E}=\mathbf{a}_\theta E_\theta+\mathbf{a}_\phi E_\phi\]
+\[\mathbf{H}=\frac1\eta\,\mathbf{a}_R\times\mathbf{E}=\frac1\eta\big(\mathbf{a}_\phi E_\theta-\mathbf{a}_\theta E_\phi\big)\]
+\[\boldsymbol{\mathcal{P}}_{av}=\tfrac12\text{Re}(\mathbf{E}\times\mathbf{H}^*)=\mathbf{a}_R\frac{1}{2\eta}\big(|E_\theta|^2+|E_\phi|^2\big)\]
+</div></article>
+
+<article data-n="7-13" data-g="4" data-t="동축케이블 전력 = V₀I 검증">
+<div class="card"><div class="q">
+<p>From the point of view of electromagnetics, the power transmitted by a lossless coaxial cable can be considered in terms of the Poynting vector inside the dielectric medium between the inner conductor and the outer sheath. Assuming that a d-c voltage \(V_0\) applied between the inner conductor (of radius <em>a</em>) and the outer sheath (of inner radius <em>b</em>) causes a current <em>I</em> to flow to a load resistance, verify that the integration of the Poynting vector over the cross-sectional area of the dielectric medium equals the power \(V_0I\) that is transmitted to the load.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">가우스 법칙에서 (\(\rho_\ell\) = 내부도체의 선전하밀도):</p>
+\[\mathbf{E}=\mathbf{a}_r\frac{\rho_\ell}{2\pi\epsilon r}\]
+\[V_0=-\int_b^a\mathbf{E}\cdot d\mathbf{r}=\frac{\rho_\ell}{2\pi\epsilon}\ln\frac{b}{a}\ \longrightarrow\ \mathbf{E}=\mathbf{a}_r\frac{V_0}{r\ln(b/a)}\]
+<p class="step">앙페르 주회적분 법칙에서:</p>
+\[\mathbf{H}=\mathbf{a}_\phi\frac{I}{2\pi r}\]
+<p class="step">포인팅 벡터:</p>
+\[\boldsymbol{\mathcal{P}}=\mathbf{E}\times\mathbf{H}=\mathbf{a}_z\frac{V_0I}{2\pi r^2\ln(b/a)}\]
+<p class="step">단면적에 대해 적분하면</p>
+\[P=\int_S\boldsymbol{\mathcal{P}}\cdot d\mathbf{s}=\frac{V_0I}{2\pi\ln(b/a)}\int_0^{2\pi}\!\!\int_a^b\frac{1}{r^2}\,r\,dr\,d\phi=V_0I\quad\blacksquare\]
+</div></article>
+
+<!-- ============ 5. 수직 입사 ============ -->
+
+<article data-n="7-14" data-g="5" data-t="무손실 유전체 수직입사 — Γ, τ, S">
+<div class="card"><div class="q">
+<p>A uniform plane wave in air with \(\mathbf{E}_i(x,t)=\mathbf{a}_y50\sin(10^8t-\beta x)\) (V/m) is incident normally on a lossless medium \((\epsilon_r=2,\ \mu_r=8,\ \sigma=0)\) in the region \(x\ge0\). Find</p>
+<ol type="a"><li>\(\mathbf{E}_r\) and \(\mathbf{H}_r\),</li>
+<li>\(\Gamma\), \(\tau\), and \(S\), and</li>
+<li>\(\mathbf{E}_t\) and \(\mathbf{H}_t\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">sine 기준 페이저: \(\mathbf{E}_i(x)=\mathbf{a}_y50\,e^{-j\beta_1x}\)</p>
+<p class="step">매질 1 (공기):</p>
+\[\beta_1=\frac{\omega}{c}=\frac{10^8}{3\times10^8}=\frac13\ \text{(rad/m)},\qquad \eta_1=\eta_0=120\pi\ (\Omega)\]
+<p class="step">매질 2 (무손실):</p>
+\[\beta_2=\omega\sqrt{\mu_2\epsilon_2}=\frac{\omega}{c}\sqrt{\mu_r\epsilon_r}=\frac43\ \text{(rad/m)}\]
+\[\eta_2=\sqrt{\frac{\mu_0\mu_r}{\epsilon_0\epsilon_r}}=2\eta_0=240\pi\ (\Omega)\]
+<p class="step">Eq.(7&#8209;25):</p>
+\[\mathbf{H}_i(x)=\frac{1}{\eta_0}\mathbf{a}_x\times\mathbf{E}_i=\mathbf{a}_z\frac{50}{\eta_0}e^{-jx/3}=\mathbf{a}_z\frac{1}{2.4\pi}e^{-jx/3}\]
+<hr>
+<p><b class="part">(a)</b></p>
+\[\frac{E_{r0}}{E_{i0}}=\Gamma=\frac{\eta_2-\eta_1}{\eta_2+\eta_1}=\frac{2-1}{2+1}=\frac13\]
+\[\mathbf{E}_r=\mathbf{a}_y\frac{50}{3}e^{jx/3}\ \longrightarrow\ \mathbf{E}_r(x,t)=\mathbf{a}_y\frac{50}{3}\sin\!\big(10^8t+x/3\big)\ \text{(V/m)}\]
+\[\mathbf{H}_r=\frac{1}{\eta_0}(-\mathbf{a}_x)\times\mathbf{E}_r\ \longrightarrow\ \mathbf{H}_r(x,t)=-\mathbf{a}_z\frac{1}{7.2\pi}\sin\!\big(10^8t+x/3\big)\ \text{(A/m)}\]
+<p><b class="part">(b)</b></p>
+\[\Gamma=\tfrac13,\qquad \tau=1+\Gamma=\tfrac43,\qquad S=\frac{1+\Gamma}{1-\Gamma}=2\]
+<p><b class="part">(c)</b></p>
+\[\mathbf{E}_t=(\tau E_{i0})\mathbf{a}_ye^{-j\beta_2x}\ \longrightarrow\ \mathbf{E}_t(x,t)=\mathbf{a}_y\frac{200}{3}\sin\!\big(10^8t-4x/3\big)\ \text{(V/m)}\]
+\[\mathbf{H}_t=\frac{1}{\eta_2}\mathbf{a}_x\times\mathbf{E}_t\ \longrightarrow\ \mathbf{H}_t(x,t)=\mathbf{a}_z\frac{1}{3.6\pi}\sin\!\big(10^8t-4x/3\big)\ \text{(A/m)}\]
+</div></article>
+
+<article data-n="7-16" data-g="5" data-t="H장 기준 반사·투과 계수">
+<div class="card"><div class="q">
+<p>For uniform plane waves in medium 1 incident normally on a plane interface with medium 2, obtain the ratios:</p>
+<ol type="a"><li>\(H_{r0}/H_{i0}\) and compare with the reflection coefficient in Eq. (7-94), and</li>
+<li>\(H_{t0}/H_{i0}\) and compare with the transmission coefficient in Eq. (7-95).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b></p>
+\[\Gamma=\frac{E_{r0}}{E_{i0}}=\frac{-\eta_1H_{r0}}{\eta_1H_{i0}}=\frac{\eta_2-\eta_1}{\eta_2+\eta_1}\]
+\[\longrightarrow\ \frac{H_{r0}}{H_{i0}}=-\Gamma=\frac{\eta_1-\eta_2}{\eta_1+\eta_2}\]
+<p><b class="part">(b)</b></p>
+\[\tau=\frac{E_{t0}}{E_{i0}}=\frac{\eta_2H_{t0}}{\eta_1H_{i0}}=\frac{2\eta_2}{\eta_2+\eta_1}\]
+\[\longrightarrow\ \frac{H_{t0}}{H_{i0}}=\frac{\eta_1}{\eta_2}\tau=\frac{2\eta_1}{\eta_2+\eta_1}\]
+<div class="note">H장의 반사계수는 E장의 <b>부호가 반대</b>입니다. 완전도체 벽에서 E는 0, H는 2배가 되는 이유.</div>
+</div></article>
+
+<article data-n="7-17" data-g="5" data-t="원편광의 완전도체 반사 — 표면전류">
+<div class="card"><div class="q">
+<p>A right-hand circularly polarized plane wave represented by the phasor</p>
+\[\mathbf{E}_i=E_0(\mathbf{a}_x-j\mathbf{a}_y)e^{-j\beta z}\]
+<p>impinges normally on a perfectly conducting wall at \(z=0\).</p>
+<ol type="a"><li>Determine the polarization of the reflected wave.</li>
+<li>Find the induced current on the conducting wall.</li>
+<li>Obtain the instantaneous expression of the total electric intensity based on a cosine time reference.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> 반사파를 \(\mathbf{E}_r(z)=(\mathbf{a}_xE_{rx}+\mathbf{a}_yE_{ry})e^{j\beta z}\)로 두면, \(z=0\)의 경계조건 \(\mathbf{E}_i(0)+\mathbf{E}_r(0)=0\)에서</p>
+\[\mathbf{E}_r(z)=E_0(-\mathbf{a}_x+j\mathbf{a}_y)e^{j\beta z}\]
+<p class="step">\(-z\) 방향으로 진행하는 <b>좌선 원편광</b>파.</p>
+<hr>
+<p><b class="part">(b)</b> \(\mathbf{a}_{n2}\times(\mathbf{H}_1-\mathbf{H}_2)=\mathbf{J}_s\), 완전도체 내부에서 \(\mathbf{H}_2=0\)이므로</p>
+\[\mathbf{H}_i(0)=\frac{1}{\eta_0}\mathbf{a}_z\times\mathbf{E}_i(0)=\frac{E_0}{\eta_0}(j\mathbf{a}_x+\mathbf{a}_y)\]
+\[\mathbf{H}_r(0)=\frac{1}{\eta_0}(-\mathbf{a}_z)\times\mathbf{E}_r(0)=\frac{E_0}{\eta_0}(j\mathbf{a}_x+\mathbf{a}_y)\]
+\[\mathbf{H}_1(0)=\mathbf{H}_i(0)+\mathbf{H}_r(0)=\frac{2E_0}{\eta_0}(j\mathbf{a}_x+\mathbf{a}_y)\]
+\[\mathbf{J}_s=-\mathbf{a}_z\times\mathbf{H}_1(0)=\frac{2E_0}{\eta_0}(\mathbf{a}_x-j\mathbf{a}_y)\]
+<hr>
+<p><b class="part">(c)</b></p>
+\[\mathbf{E}_1(z,t)=\text{Re}\big[(\mathbf{E}_i(z)+\mathbf{E}_r(z))e^{j\omega t}\big]\]
+\[=\text{Re}\,E_0\big[(\mathbf{a}_x-j\mathbf{a}_y)e^{-j\beta z}+(-\mathbf{a}_x+j\mathbf{a}_y)e^{j\beta z}\big]e^{j\omega t}\]
+\[=\text{Re}\,E_0\big[-2j(\mathbf{a}_x-j\mathbf{a}_y)\sin\beta z\big]e^{j\omega t}\]
+\[=2E_0\sin\beta z\,(\mathbf{a}_x\sin\omega t-\mathbf{a}_y\cos\omega t)\]
+</div></article>
+
+<article data-n="7-18" data-g="5" data-t="|Γ| = |τ| 조건과 SWR">
+<div class="card"><div class="q">
+<p>Determine the condition under which the magnitude of the reflection coefficient equals that of the transmission coefficient for a uniform plane wave at normal incidence on an interface between two lossless dielectric media. What is the standing-wave ratio in dB under this condition?</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">수직입사에서 \(1+\Gamma=\tau\), 단 \(|\Gamma|\le1\).</p>
+<p class="step">\(|\tau|=|\Gamma|\)이려면 \(\Gamma<0\)이어야 하고,</p>
+\[\eta_1-\eta_2=2\eta_2\ \longrightarrow\ \eta_1=3\eta_2\ \longrightarrow\ |\Gamma|=\tfrac12\]
+\[S=\frac{1+|\Gamma|}{1-|\Gamma|}=3\ \longrightarrow\ S_{dB}=20\log_{10}3=9.54\ \text{(dB)}\]
+</div></article>
+
+<article data-n="7-19" data-g="5" data-t="손실매질 수직입사 — 전 항목 계산">
+<div class="card"><div class="q">
+<p>A uniform plane wave in air with \(\mathbf{E}_i(z)=\mathbf{a}_x10e^{-j6z}\) (V/m) is incident normally on an interface at \(z=0\) with a lossy medium having a dielectric constant 2.25 and a loss tangent 0.3. Find the following:</p>
+<ol type="a"><li>The phasor expressions for \(\mathbf{E}_r(z)\), \(\mathbf{H}_r(z)\), \(\mathbf{E}_t(z)\), and \(\mathbf{H}_t(z)\).</li>
+<li>The standing-wave ratio for the wave in air.</li>
+<li>The expressions for time-average Poynting vectors in air and in the lossy medium.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+\[\mathbf{H}_i(z)=\mathbf{a}_y\frac{10}{377}e^{-j6z}\ \text{(A/m)}\]
+<p class="step">공기 중: \(\beta_1=6=\omega/c\Rightarrow\omega=6c=1.8\times10^9\) (rad/s)</p>
+<p class="step">손실매질: \(\epsilon_{r2}=2.25\), \(\tan\delta=\epsilon''/\epsilon'=0.3\)</p>
+\[\text{Eq.(7-47):}\quad\alpha_2=\frac{\omega\epsilon''}{2}\sqrt{\frac{\mu}{\epsilon'}}=\frac{\omega}{2}\Big(\frac{\epsilon''}{\epsilon'}\Big)\frac{\sqrt{\epsilon_{r2}}}{c}=1.35\ \text{(Np/m)}\]
+\[\text{Eq.(7-48):}\quad\beta_2=\omega\sqrt{\mu\epsilon}\Big[1+\tfrac18\Big(\tfrac{\epsilon''}{\epsilon'}\Big)^2\Big]=9.10\ \text{(rad/m)}\]
+\[\text{Eq.(7-49):}\quad\eta_2=\sqrt{\frac{\mu}{\epsilon'}}\Big(1+j\frac{\epsilon''}{2\epsilon'}\Big)=\frac{377}{1.5}\big(1+j\tfrac{0.3}{2}\big)=254\,e^{j8.5^\circ}\ (\Omega)\]
+\[\Gamma=\frac{\eta_2-\eta_1}{\eta_2+\eta_1}=0.208\,e^{j159.9^\circ},\qquad \tau=1+\Gamma=0.805+j0.072=0.808\,e^{j5.1^\circ}\]
+<hr>
+<p><b class="part">(a)</b></p>
+\[\mathbf{E}_r(z)=\mathbf{a}_x2.08\,e^{j(6z+159.9^\circ)}\ \text{(V/m)}\]
+\[\mathbf{H}_r(z)=\frac{1}{\eta_1}(-\mathbf{a}_z)\times\mathbf{E}_r(z)=-\mathbf{a}_y0.0055\,e^{j(6z+159.9^\circ)}\ \text{(A/m)}\]
+\[\mathbf{E}_t(z)=\mathbf{a}_x(\tau E_{i0})e^{-\alpha_2z}e^{-j\beta_2z}=\mathbf{a}_x8.08\,e^{-1.35z}e^{-j(9.10z-5.1^\circ)}\ \text{(V/m)}\]
+\[\mathbf{H}_t(z)=\mathbf{a}_y\frac{8.08}{\eta_2}e^{-1.35z}e^{-j(9.10z-5.1^\circ)}=\mathbf{a}_y0.032\,e^{-1.35z}e^{-j(9.10z+3.4^\circ)}\ \text{(A/m)}\]
+<p><b class="part">(b)</b></p>
+\[S=\frac{1+|\Gamma|}{1-|\Gamma|}=\frac{1+0.208}{1-0.208}=1.53\]
+<p><b class="part">(c)</b></p>
+\[(\boldsymbol{\mathcal{P}}_{av})_1=\tfrac12\text{Re}\big(\mathbf{E}_i\times\mathbf{H}_i^*+\mathbf{E}_r\times\mathbf{H}_r^*\big)=\mathbf{a}_z\Big(\frac{10^2}{2\times120\pi}-\frac{2.08^2}{2\times120\pi}\Big)=\mathbf{a}_z\,0.127\ \text{(W/m}^2)\]
+\[(\boldsymbol{\mathcal{P}}_{av})_2=\tfrac12\text{Re}\big(\mathbf{E}_t\times\mathbf{H}_t^*\big)=\mathbf{a}_z\frac{8.08^2}{2\times254}e^{-2.70z}\cos8.5^\circ=\mathbf{a}_z\,0.127\,e^{-2.70z}\ \text{(W/m}^2)\]
+<div class="note"><b>검산.</b> \(z=0\)에서 두 값이 0.127로 일치 — 경계면에서 전력이 연속이어야 하므로 맞습니다.</div>
+</div></article>
+
+<!-- ============ 6. 사입사 · 전리층 ============ -->
+
+<article data-n="7-20" data-g="6" data-t="완전도체 사입사 — 입사각·정재파">
+<div class="card"><div class="q">
+<p>A uniform sinusoidal plane wave in air with the following phasor expression for electric intensity</p>
+\[\mathbf{E}_i(x,z)=\mathbf{a}_y10\,e^{-j(6x+8z)}\ \text{(V/m)}\]
+<p>is incident on a perfectly conducting plane at \(z=0\).</p>
+<ol type="a"><li>Find the frequency and wavelength of the wave.</li>
+<li>Write the instantaneous expressions for \(\mathbf{E}_i(x,z;t)\) and \(\mathbf{H}_i(x,z;t)\).</li>
+<li>Determine the angle of incidence.</li>
+<li>Find \(\mathbf{E}_r(x,z)\) and \(\mathbf{H}_r(x,z)\) of the reflected wave.</li>
+<li>Find \(\mathbf{E}_1(x,z)\) and \(\mathbf{H}_1(x,z)\) of the total field in air.</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> \(k_x=6,\ k_z=8\Rightarrow k=\beta=\sqrt{k_x^2+k_z^2}=10\) (rad/m)</p>
+\[\lambda=\frac{2\pi}{k}=0.628\ \text{(m)},\quad f=\frac{c}{\lambda}=4.78\times10^8\ \text{(Hz)},\quad \omega=kc=3\times10^9\ \text{(rad/s)}\]
+<p><b class="part">(b)</b></p>
+\[\mathbf{E}_i(x,z;t)=\mathbf{a}_y10\cos(3\times10^9t-6x-8z)\ \text{(V/m)}\]
+<p class="step">\(\mathbf{a}_{ni}=\mathbf{k}/k=\mathbf{a}_x0.6+\mathbf{a}_z0.8\)이므로</p>
+\[\mathbf{H}_i(x,z)=\frac{1}{\eta_0}\mathbf{a}_{ni}\times\mathbf{E}_i=\Big(-\mathbf{a}_x\frac{1}{15\pi}+\mathbf{a}_z\frac{1}{20\pi}\Big)e^{-j(6x+8z)}\]
+\[\mathbf{H}_i(x,z;t)=\Big(-\mathbf{a}_x\frac{1}{15\pi}+\mathbf{a}_z\frac{1}{20\pi}\Big)\cos(3\times10^9t-6x-8z)\ \text{(A/m)}\]
+<p><b class="part">(c)</b></p>
+\[\cos\theta_i=\mathbf{a}_{ni}\cdot\mathbf{a}_z=0.8\ \longrightarrow\ \theta_i=\cos^{-1}0.8=36.9^\circ\]
+<p><b class="part">(d)</b> \(\mathbf{E}_i(x,0)+\mathbf{E}_r(x,0)=0\)에서</p>
+\[\mathbf{E}_r(x,z)=-\mathbf{a}_y10\,e^{-j(6x-8z)}\]
+<p class="step">\(\mathbf{a}_{nr}=\mathbf{a}_x0.6-\mathbf{a}_z0.8\):</p>
+\[\mathbf{H}_r(x,z)=\frac{1}{\eta_0}\mathbf{a}_{nr}\times\mathbf{E}_r(x,z)=-\Big(\mathbf{a}_x\frac{1}{15\pi}+\mathbf{a}_z\frac{1}{20\pi}\Big)e^{-j(6x-8z)}\]
+<p><b class="part">(e)</b></p>
+\[\mathbf{E}_1(x,z)=\mathbf{E}_i+\mathbf{E}_r=\mathbf{a}_y10\big(e^{-j8z}-e^{j8z}\big)e^{-j6x}=-\mathbf{a}_y\,j20\,e^{-j6x}\sin8z\ \text{(V/m)}\]
+\[\mathbf{H}_1(x,z)=\mathbf{H}_i+\mathbf{H}_r=-\Big(\mathbf{a}_x\frac{2}{15\pi}\cos8z+\mathbf{a}_z\,j\frac{1}{10\pi}\sin8z\Big)e^{-j6x}\ \text{(A/m)}\]
+<div class="note"><b>구조.</b> \(z\) 방향은 \(\sin8z\)/\(\cos8z\)의 <b>정재파</b>, \(x\) 방향은 \(e^{-j6x}\)의 <b>진행파</b>. 도체 벽 앞의 전형적인 패턴입니다.</div>
+</div></article>
+
+<article data-n="7-21" data-g="6" data-t="수직편파 사입사 — Γ⊥, τ⊥">
+<div class="card"><div class="q">
+<p>For the case of oblique incidence of a uniform plane wave with perpendicular polarization on a plane boundary with \(\epsilon_1=\epsilon_0,\ \epsilon_2=2.25\epsilon_0,\ \mu_1=\mu_2=\mu_0\), as shown in Fig. 7-14, assume \(E_{i0}=20\) (V/m), \(f=100\) (MHz), and \(\theta_i=30°\).</p>
+<ol type="a"><li>Find the reflection and transmission coefficients.</li>
+<li>Write the instantaneous expression for \(\mathbf{E}_t(x,z;t)\) and \(\mathbf{H}_t(x,z;t)\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">반사의 스넬 법칙: \(\theta_r=\theta_i=30^\circ\)</p>
+<p class="step">굴절의 스넬 법칙:</p>
+\[\sin\theta_t=\sqrt{\frac{\epsilon_1}{\epsilon_2}}\sin\theta_i=\frac13\ \longrightarrow\ \theta_t=19.47^\circ,\quad\cos\theta_t=0.943\]
+\[\eta_1=\eta_0=377\ (\Omega),\qquad \eta_2=\sqrt{\frac{\mu_2}{\epsilon_2}}=\frac{377}{1.5}=251\ (\Omega)\]
+<p><b class="part">(a)</b></p>
+\[\Gamma_\perp=\frac{\eta_2\cos\theta_i-\eta_1\cos\theta_t}{\eta_2\cos\theta_i+\eta_1\cos\theta_t}=-0.241\]
+\[\tau_\perp=1+\Gamma_\perp=1-0.241=0.759\]
+<p><b class="part">(b)</b> Eq.(7&#8209;141):</p>
+\[\mathbf{E}_t(x,z)=\mathbf{a}_y\tau E_{i0}\,e^{-j\beta_2(x\sin\theta_t+z\cos\theta_t)},\qquad \beta_2=\omega\sqrt{\mu_2\epsilon_2}=\pi\ \text{(rad/m)}\]
+\[\mathbf{E}_t(x,z;t)=\mathbf{a}_y15.2\cos(2\pi\times10^8t-1.05x-2.96z)\ \text{(V/m)}\]
+<p class="step">Eq.(7&#8209;142):</p>
+\[\mathbf{H}_t(x,z)=\frac{15.2}{251}\big(-\mathbf{a}_x\cos\theta_t+\mathbf{a}_z\sin\theta_t\big)e^{-j(1.05x+2.96z)}\]
+\[\mathbf{H}_t(x,z;t)=0.06\big(-\mathbf{a}_x0.943+\mathbf{a}_z0.333\big)\cos(2\pi\times10^8t-1.05x-2.96z)\ \text{(A/m)}\]
+</div></article>
+
+<article data-n="7-22" data-g="6" data-t="평행편파 사입사 — Γ∥, τ∥">
+<div class="card"><div class="q">
+<p>For the case of oblique incidence of a uniform plane wave with parallel polarization on a plane boundary with \(\epsilon_1=\epsilon_0,\ \epsilon_2=2.25\epsilon_0,\ \mu_1=\mu_2=\mu_0\), as shown in Fig. 7-15, assume \(H_{i0}=0.053\) (A/m), \(f=100\) (MHz), and \(\theta_i=30°\).</p>
+<ol type="a"><li>Find the reflection and transmission coefficients.</li>
+<li>Write the instantaneous expressions for \(\mathbf{E}_t(x,z;t)\) and \(\mathbf{H}_t(x,z;t)\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">P.7&#8209;21에서: \(\theta_r=\theta_i=30^\circ\), \(\theta_t=19.47^\circ\), \(\eta_1=377\ \Omega\), \(\eta_2=251\ \Omega\)</p>
+<p><b class="part">(a)</b> Eq.(7&#8209;158):</p>
+\[\Gamma_\parallel=\frac{\eta_2\cos\theta_t-\eta_1\cos\theta_i}{\eta_2\cos\theta_t+\eta_1\cos\theta_i}=\frac{251\times0.943-377\times0.866}{251\times0.943+377\times0.866}=-0.159\]
+<p class="step">Eq.(7&#8209;160):</p>
+\[\tau_\parallel=(1+\Gamma_\parallel)\frac{\cos\theta_i}{\cos\theta_t}=0.772\]
+<p><b class="part">(b)</b></p>
+\[\beta_1=\frac{\omega}{c}=\frac{2\pi\times10^8}{3\times10^8}=\frac{2\pi}{3}\ \text{(rad/m)},\qquad \beta_2=\omega\sqrt{\mu_2\epsilon_2}=\sqrt{\epsilon_{r2}}\,\beta_1=\pi\ \text{(rad/m)}\]
+\[\mathbf{H}_i(x,z)=\mathbf{a}_y0.053\,e^{-j(\pi x/3+\pi z/\sqrt3)}\ \text{(A/m)}\]
+<p class="step">Eq.(7&#8209;150):</p>
+\[\mathbf{E}_i(x,z)=19.98(\mathbf{a}_x0.866-\mathbf{a}_z0.5)e^{-j(\pi x/3+\pi z/\sqrt3)}\ \text{(V/m)}\]
+\[E_{t0}=\tau_\parallel E_{i0}=0.772\times19.98=15.42\ \text{(V/m)}\]
+<p class="step">Eqs.(7&#8209;154), (7&#8209;155):</p>
+\[\mathbf{E}_t(x,z)=15.42(\mathbf{a}_x0.943-\mathbf{a}_z0.333)e^{-j(1.05x+2.96z)}\]
+\[\mathbf{H}_t(x,z)=\mathbf{a}_y0.061\,e^{-j(1.05x+2.96z)}\]
+<p class="step">cosine 기준 순시식:</p>
+\[\mathbf{E}_t(x,z;t)=15.42(\mathbf{a}_x0.943-\mathbf{a}_z0.333)\cos(2\pi\times10^8t-1.05x-2.96z)\ \text{(V/m)}\]
+\[\mathbf{H}_t(x,z;t)=\mathbf{a}_y0.061\cos(2\pi\times10^8t-1.05x-2.96z)\ \text{(A/m)}\]
+</div></article>
+
+<article data-n="7-23" data-g="6" data-t="전리층 전자밀도 측정" data-nosol="1">
+<div class="card"><div class="q">
+<ol type="a"><li>Suggest a method for measuring the maximum electron density in the ionosphere.</li>
+<li>Assuming \(N_{max}=8\times10^{11}\) per cubic meter, discuss the choice of minimum usable frequency for communicating with a space station beyond the ionosphere.</li>
+<li>What happens at oblique incidence on the ionosphere if a lower frequency is used?</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>참고</span><button class="hide" type="button">닫기</button></div>
+<p class="step">이 문제는 Cheng 공식 Solutions Manual에 <b>수록되어 있지 않습니다.</b> 서술형 문제라 해답이 생략된 것으로 보입니다.</p>
+<div class="note">방향만 잡자면 플라즈마 주파수 \(f_p=\dfrac{1}{2\pi}\sqrt{\dfrac{Ne^2}{m\epsilon_0}}\)를 쓰는 문제입니다. 수직입사에서 반사되기 시작하는 최저 주파수가 곧 \(f_p\)이고, 그보다 낮으면 \(\epsilon\)이 음수가 되어 통과하지 못합니다. 사입사에서는 \(f_p/\cos\theta_i\)까지 반사되므로 더 높은 주파수도 되돌아옵니다. <b>계산해서 제출할 답이 아니라 개념 확인용으로만 보세요.</b></div>
+</div></article>
+
+<article data-n="7-24" data-g="6" data-t="전리층 사입사 — f = f_p/2">
+<div class="card"><div class="q">
+<p>A uniform plane wave is incident on the ionosphere at an angle of incidence \(\theta_i=60°\). Assuming a constant electron density and a wave frequency equal to one-half of the plasma frequency of the ionosphere, determine</p>
+<ol type="a"><li>\(\Gamma_\perp\) and \(\tau_\perp\), and</li>
+<li>\(\Gamma_\parallel\) and \(\tau_\parallel\).</li></ol>
+<p>Interpret the significance of these complex quantities.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">\(f=f_p/2\), \(\theta_i=60^\circ\)이므로</p>
+\[\eta_p=\frac{\eta_0}{\sqrt{1-(f_p/f)^2}}=-j\frac{\eta_0}{\sqrt3}\ \longrightarrow\ \frac{\eta_p}{\eta_0}=-\frac{j}{\sqrt3}\]
+<p class="step">Eq.(7&#8209;118):</p>
+\[\sin\theta_t=\frac{\eta_p}{\eta_0}\sin\theta_i=-\frac{j}{2},\qquad \cos\theta_t=\frac{\sqrt5}{2},\qquad \cos\theta_i=\frac12\]
+<p><b class="part">(a)</b> Eq.(7&#8209;147), (7&#8209;148):</p>
+\[\Gamma_\perp=\frac{(\eta_p/\eta_0)\cos\theta_i-\cos\theta_t}{(\eta_p/\eta_0)\cos\theta_i+\cos\theta_t}=e^{j209^\circ}\]
+\[\tau_\perp=\frac{2(\eta_p/\eta_0)\cos\theta_i}{(\eta_p/\eta_0)\cos\theta_i+\cos\theta_t}=0.5\,e^{-j75.5^\circ}\]
+<p><b class="part">(b)</b> Eq.(7&#8209;158), (7&#8209;159):</p>
+\[\Gamma_\parallel=\frac{(\eta_p/\eta_0)\cos\theta_t-\cos\theta_i}{(\eta_p/\eta_0)\cos\theta_t+\cos\theta_i}=e^{-j75.5^\circ}\]
+\[\tau_\parallel=\frac{2(\eta_p/\eta_0)\cos\theta_i}{(\eta_p/\eta_0)\cos\theta_t+\cos\theta_i}=0.707\,e^{-j37.8^\circ}\]
+<div class="note warn"><b>검산 결과 매뉴얼과 다릅니다.</b> 스캔본에는 \(\Gamma_\parallel=e^{j76^\circ}\), \(\tau_\parallel=0.177e^{-j35^\circ}\)로 적혀 있으나, 위 값이 맞습니다. 근거: 7&#8209;22에서 검증된 항등식 \(\tau_\parallel=(1+\Gamma_\parallel)\dfrac{\cos\theta_i}{\cos\theta_t}\)에 대입하면 \(0.707\angle-37.8^\circ\)가 나옵니다. \(|\Gamma_\parallel|=1\)이므로 \(|\tau_\parallel|\le2\times0.447=0.894\)여서 0.177 자체가 불가능합니다.</div>
+<hr>
+<p class="step"><b>해석.</b> \(|\Gamma_\perp|=|\Gamma_\parallel|=1\)이지만 반사파의 <b>위상 변이는 입사파의 편광에 따라 다릅니다.</b> 공기 중에는 정재파가 서고, 전리층으로 투과된 파는 지수적으로 감쇠합니다.</p>
+</div></article>
+
+<article data-n="7-25" data-g="6" data-t="10kHz 해수면 근접입사 (θᵢ=88°)">
+<div class="card"><div class="q">
+<p>A 10-(kHz) electromagnetic wave in air with parallel polarization is incident obliquely on an ocean surface at a near-grazing angle \(\theta_i=88°\). Using \(\epsilon_r=81,\ \mu_r=1\), and \(\sigma=4\) (S/m) for seawater, find (a) the angle of refraction \(\theta_t\), (b) the transmission coefficient \(\tau_\parallel\), and (c) the distance below the ocean surface where the field intensity has been diminished by 30 (dB).</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+\[k_{2x}^2+k_{2z}^2=k_2^2=\omega^2\mu_0\epsilon_2-j\omega\mu_0\sigma_2\quad\text{(1)}\]
+<p class="step">\(z=0\)에서 모든 \(x,y\)에 대한 연속조건:</p>
+\[k_{2x}=k_{1x}=\omega\sqrt{\mu_0\epsilon_0}\sin\theta_i=\beta_x=2.09\times10^{-4}\quad\text{(2)}\]
+\[k_{2z}=\beta_{2z}-j\alpha_{2z}\quad\text{(3)}\]
+<p class="step">(1)(2)(3)을 결합하면 \(\alpha_{2z}\)와 \(\beta_{2z}\)를 구할 수 있는데, \(\beta_x^2\ll\omega^2\mu_0\epsilon_2\)이므로</p>
+\[\alpha_2=\alpha_{2z}\cong\beta_{2z}\cong\frac1\delta=\sqrt{\pi f\mu_0\sigma_2}=0.3974\ \text{(m}^{-1})\]
+<p><b class="part">(a)</b></p>
+\[\theta_t=\tan^{-1}\frac{\beta_x}{\beta_{2z}}\cong\tan^{-1}\frac{2.09\times10^{-4}}{0.3974}\cong5.26\times10^{-4}\ \text{(rad)}=0.03^\circ\]
+<p><b class="part">(b)</b> \(\eta_2=\dfrac{\alpha_2}{\sigma_2}(1+j)=0.0993(1+j)\), \(\cos\theta_t=\cos0.03^\circ\cong1\)</p>
+\[\tau_\parallel=\frac{2\eta_2\cos\theta_i}{\eta_2\cos\theta_t+\eta_0\cos\theta_i}=\frac{2\times0.0993(1+j)\times\cos88^\circ}{0.0993(1+j)+377\cos88^\circ}\]
+\[\cong5.23\times10^{-4}(1+j)=7.40\times10^{-4}\,e^{j\pi/4}\]
+<div class="note warn"><b>검산 결과 매뉴얼과 다릅니다.</b> 스캔본은 \(0.0151(1+j)=0.0214e^{j\pi/4}\)인데, 계산 과정에서 <b>분자의 \(\cos\theta_i\)가 빠졌습니다.</b> 두 값의 비가 정확히 \(1/\cos88^\circ=28.65\)로 떨어지는 것이 근거입니다. Eq.(7&#8209;159)가 옳다는 것은 7&#8209;22에서 확인됩니다(같은 식으로 0.772가 그대로 재현됨).</div>
+<p><b class="part">(c)</b></p>
+\[20\log_{10}e^{-\alpha_2z}=-30\ \longrightarrow\ z=\frac{1.5}{\alpha_2\log_{10}e}=8.69\ \text{(m)}\]
+<div class="note"><b>주목할 점.</b> 88°로 거의 스치듯 들어가도 굴절각은 <b>0.03°</b>, 즉 거의 수직으로 꺾여 들어갑니다. 바닷물의 굴절률이 워낙 커서 입사각과 무관하게 수직에 가깝게 진행합니다. 이것이 해상 통신에서 잠수함 수신이 가능한 이유입니다.</div>
+</div></article>
+
+<!-- ============ 7. 전반사 · 브루스터각 ============ -->
+
+<article data-n="7-26" data-g="7" data-t="투명판 통과 — 측방변위">
+<div class="card"><div class="q">
+<p>A light ray is incident from air obliquely on a transparent sheet of thickness <em>d</em> with an index of refraction <em>n</em>, as shown in Fig. 7-16. The angle of incidence is \(\theta_i\). Find (a) \(\theta_t\), (b) the distance \(\ell_1\) at the point of exit, and (c) the amount of the lateral displacement \(\ell_2\) of the emerging ray.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> 스넬 법칙:</p>
+\[\frac{\sin\theta_t}{\sin\theta_i}=\frac1n\ \longrightarrow\ \theta_t=\sin^{-1}\Big(\frac1n\sin\theta_i\Big)\]
+<p><b class="part">(b)</b></p>
+\[\cos\theta_t=\sqrt{1-\Big(\frac1n\sin\theta_i\Big)^2}\]
+\[\ell_1=\overline{BC}=\overline{AC}\tan\theta_t=d\frac{\sin\theta_t}{\cos\theta_t}=\frac{d\sin\theta_i}{\sqrt{n^2-\sin^2\theta_i}}\]
+<p><b class="part">(c)</b></p>
+\[\ell_2=\overline{BD}=\overline{AC}\sin(\theta_i-\theta_t)=\frac{d}{\cos\theta_t}\big(\sin\theta_i\cos\theta_t-\cos\theta_i\sin\theta_t\big)\]
+\[=d\sin\theta_i\Big[1-\frac{\cos\theta_i}{\sqrt{n^2-\sin^2\theta_i}}\Big]\]
+</div></article>
+
+<article data-n="7-27" data-g="7" data-t="전반사 — 소멸파와 투과전력 0">
+<div class="card"><div class="q">
+<p>A uniform plane wave with perpendicular polarization represented by Eqs. (7-135) and (7-136) is incident on a plane interface at \(z=0\), as shown in Fig. 7-14. Assuming \(\epsilon_2&lt;\epsilon_1\) and \(\theta_i&gt;\theta_c\), (a) obtain the phasor expressions for the transmitted field \((\mathbf{E}_t,\mathbf{H}_t)\), and (b) verify that the average power transmitted into medium 2 is zero.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> \(\sin\theta_c=\sqrt{\epsilon_2/\epsilon_1}\)이므로 \(\theta_i>\theta_c\)에서</p>
+\[\sin\theta_t=\sqrt{\frac{\epsilon_1}{\epsilon_2}}\sin\theta_i>1,\qquad \cos\theta_t=-j\sqrt{\Big(\frac{\epsilon_1}{\epsilon_2}\Big)\sin^2\theta_i-1}\]
+<p class="step">Eqs.(7&#8209;141), (7&#8209;142)에서</p>
+\[\mathbf{E}_t(x,z)=\mathbf{a}_yE_{t0}\,e^{-\alpha_2z}e^{-j\beta_{2x}x}\]
+\[\mathbf{H}_t(x,z)=\frac{E_{t0}}{\eta_2}\Big(\mathbf{a}_x\,j\,\alpha_2+\mathbf{a}_z\sqrt{\frac{\epsilon_1}{\epsilon_2}}\sin\theta_i\Big)e^{-\alpha_2z}e^{-j\beta_{2x}x}\]
+<p class="step">여기서</p>
+\[\beta_{2x}=\beta_2\sin\theta_t=\beta_2\sqrt{\frac{\epsilon_1}{\epsilon_2}}\sin\theta_i,\qquad \alpha_2=\beta_2\sqrt{\Big(\frac{\epsilon_1}{\epsilon_2}\Big)\sin^2\theta_i-1}\]
+\[E_{t0}=\frac{2\eta_2\cos\theta_i\,E_{i0}}{\eta_2\cos\theta_i-j\eta_1\sqrt{(\epsilon_1/\epsilon_2)\sin^2\theta_i-1}}\quad\text{from Eq.(7-148)}\]
+<p><b class="part">(b)</b></p>
+\[(\mathcal{P}_{av})_{zz}=\tfrac12\text{Re}\big(E_{ty}H_{tx}^*\big)=0\]
+<div class="note"><b>소멸파(evanescent wave).</b> 매질 2로 장은 스며들지만 \(z\)성분 전력은 0입니다. 표면을 따라 \(x\)방향으로만 흐르고 깊이 방향으로는 \(e^{-\alpha_2z}\)로 지수 감쇠합니다.</div>
+</div></article>
+
+<article data-n="7-28" data-g="7" data-t="임계각 입사 — E_t0/E_i0 = 2">
+<div class="card"><div class="q">
+<p>A uniform plane wave of angular frequency \(\omega\) in medium 1 having a refractive index \(n_1\) is incident on a plane interface at \(z=0\) with medium 2 having a refractive index \(n_2\ (&lt;n_1)\) at the critical angle. Let \(E_{i0}\) and \(E_{t0}\) denote the amplitudes of the incident and refracted electric field intensities, respectively.</p>
+<ol type="a"><li>Find the ratio \(E_{t0}/E_{i0}\) for perpendicular polarization.</li>
+<li>Find the ratio \(E_{t0}/E_{i0}\) for parallel polarization.</li>
+<li>Write the instantaneous expressions of \(\mathbf{E}_i(x,z;t)\) and \(\mathbf{E}_t(x,z;t)\) for perpendicular polarization in terms of the parameters \(\omega,\ n_1,\ n_2,\ \theta_i\), and \(E_{i0}\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">\(\theta_i=\theta_c\) \(\Rightarrow\) \(\theta_t=\pi/2\), \(\cos\theta_t=0\)</p>
+<p><b class="part">(a)</b> Eq.(7&#8209;148):</p>
+\[\Big(\frac{E_{t0}}{E_{i0}}\Big)_\perp=2\]
+<p><b class="part">(b)</b> Eq.(7&#8209;159):</p>
+\[\Big(\frac{E_{t0}}{E_{i0}}\Big)_\parallel=\frac{2\eta_2}{\eta_1}\]
+<p><b class="part">(c)</b></p>
+\[\mathbf{E}_i(x,z;t)=\mathbf{a}_yE_{i0}\cos\omega\Big[t-\frac{n_1}{c}\big(x\sin\theta_i+z\cos\theta_i\big)\Big]\]
+\[\mathbf{E}_t(x,z;t)=\mathbf{a}_y2E_{i0}\,e^{-\alpha z}\cos\omega\Big(t-\frac{n_2}{c}x\sin\theta_t\Big)=\mathbf{a}_y2E_{i0}\,e^{-\alpha z}\cos\omega\Big(t-\frac{n_1}{c}x\sin\theta_i\Big)\]
+<p class="step">여기서 \(\alpha=\dfrac{n_2\omega}{c}\sqrt{\Big(\dfrac{n_1}{n_2}\sin\theta_i\Big)^2-1}=0\), \(\theta=\theta_c\)일 때.</p>
+<div class="note">임계각에서는 \(\alpha=0\)이라 감쇠 없이 <b>표면을 따라 그대로 흐르는</b> 파가 됩니다. 투과파 진폭이 입사파의 2배가 되는 것이 이 조건의 특징.</div>
+</div></article>
+
+<article data-n="7-29" data-g="7" data-t="수중→공기 입사 — 임계각과 감쇠">
+<div class="card"><div class="q">
+<p>An electromagnetic wave from an underwater source with perpendicular polarization is incident on a water-air interface at \(\theta_i=20°\). Using \(\epsilon_r=81\) and \(\mu_r=1\) for fresh water, find (a) critical angle \(\theta_c\), (b) reflection coefficient \(\Gamma_\perp\), (c) transmission coefficient \(\tau_\perp\), and (d) attenuation in dB for each wavelength into the air.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b></p>
+\[\theta_c=\sin^{-1}\sqrt{\epsilon_{r2}/\epsilon_{r1}}=\sin^{-1}\sqrt{1/81}=6.38^\circ\]
+<p><b class="part">(b)</b> \(\theta_i=20^\circ>\theta_c\)이므로</p>
+\[\sin\theta_t=\sqrt{\frac{\epsilon_1}{\epsilon_2}}\sin\theta_i=3.08,\qquad \cos\theta_t=-j2.91\]
+\[\Gamma_\perp=\frac{\sqrt{\epsilon_{r1}}\cos\theta_i-\cos\theta_t}{\sqrt{\epsilon_{r1}}\cos\theta_i+\cos\theta_t}=e^{j38^\circ}=e^{j0.66}\]
+<p><b class="part">(c)</b></p>
+\[\tau_\perp=\frac{2\sqrt{\epsilon_{r1}}\cos\theta_i}{\sqrt{\epsilon_{r1}}\cos\theta_i+\cos\theta_t}=1.89\,e^{j19^\circ}=1.89\,e^{j0.33}\]
+<p><b class="part">(d)</b> 공기 중 투과파는 \(e^{-\alpha_2z}e^{-j\beta_{2x}x}\)로 변하며</p>
+\[\alpha_2=\beta_2\sqrt{\Big(\frac{\epsilon_1}{\epsilon_2}\Big)\sin^2\theta_i-1}=\frac{2\pi}{\lambda_0}(2.91)\]
+\[\text{파장당 감쇠}=20\log_{10}e^{-\alpha_2\lambda_0}=159\ \text{(dB)}\]
+<div class="note">파장 하나 지나갈 때마다 159 dB. <b>물속에서 공기로 신호를 보내는 것이 사실상 불가능한</b> 이유입니다.</div>
+</div></article>
+
+<article data-n="7-30" data-g="7" data-t="직각 프리즘 — 반사 광전력 비율">
+<div class="card"><div class="q">
+<p>Glass isosceles triangular prisms shown in Fig. 7-17 are used in optical instruments. Assuming \(\epsilon_r=4\) for glass, calculate the percentage of the incident light power reflected back by the prism.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">빛이 빗변에 처음 닿을 때 \(\theta_i=\theta_t=0\)이므로</p>
+\[\tau_1=\frac{2\eta_1}{\eta_1+\eta_0}\]
+\[\frac{(\mathcal{P}_{av})_{t1}}{(\mathcal{P}_{av})_i}=\frac{\eta_0}{\eta_1}\tau_1^2=\frac{4\eta_0\eta_1}{(\eta_1+\eta_0)^2}\]
+<p class="step">프리즘 내부의 두 빗면에서는 <b>전반사</b>가 일어납니다:</p>
+\[\theta_i=45^\circ>\theta_c=\sin^{-1}\Big(\frac12\Big)=30^\circ\]
+<p class="step">프리즘을 빠져나올 때</p>
+\[\tau_2=\frac{2\eta_0}{\eta_1+\eta_0},\qquad \frac{(\mathcal{P}_{av})_o}{(\mathcal{P}_{av})_{t1}}=\frac{\eta_1}{\eta_0}\tau_2^2=\frac{4\eta_0\eta_1}{(\eta_1+\eta_0)^2}\]
+<p class="step">따라서</p>
+\[\frac{(\mathcal{P}_{av})_o}{(\mathcal{P}_{av})_i}=\Big[\frac{4\eta_0\eta_1}{(\eta_1+\eta_0)^2}\Big]^2=\Big[\frac{4\sqrt{\epsilon_r}}{(1+\sqrt{\epsilon_r})^2}\Big]^2=0.79\]
+<p class="step">즉 입사 광전력의 <b>79%</b>가 되돌아 나옵니다.</p>
+</div></article>
+
+<article data-n="7-31" data-g="7" data-t="광섬유 개구수 N.A.">
+<div class="card"><div class="q">
+<p>For preventing interference of waves in neighboring fibers and for mechanical protection, individual optical fibers are usually cladded by a material of a lower refractive index, as shown in Fig. 7-18, where \(n_2&lt;n_1\).</p>
+<ol type="a"><li>Express the maximum angle of incidence \(\theta_a\) in terms of \(n_0,\ n_1\), and \(n_2\) for meridional rays incident on the core's end face to be trapped inside the core by total internal reflection. (\(\theta_a\) is called the acceptance angle, and \(\sin\theta_a\) the numerical aperture (N.A.) of the fiber.)</li>
+<li>Find \(\theta_a\) and N.A. if \(n_1=2,\ n_2=1.74\), and \(n_0=1\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b></p>
+\[n_0\sin\theta_a=n_1\sin(90^\circ-\theta_c)=n_1\cos\theta_c=n_1\sqrt{1-\sin^2\theta_c}\]
+\[=n_1\sqrt{1-\Big(\frac{n_2}{n_1}\Big)^2}=\sqrt{n_1^2-n_2^2}\]
+\[\sin\theta_a=\frac{1}{n_0}\sqrt{n_1^2-n_2^2}=\sqrt{n_1^2-n_2^2}\qquad(n_0=1)\]
+<p><b class="part">(b)</b></p>
+\[\text{N.A.}=\sin\theta_a=\sqrt{2^2-1.74^2}=0.9861\]
+\[\theta_a=\sin^{-1}0.9861=80.4^\circ\]
+</div></article>
+
+<article data-n="7-32" data-g="7" data-t="브루스터각 + 굴절각 = π/2 증명">
+<div class="card"><div class="q">
+<p>Prove that, under the condition of no reflection at an interface, the sum of the Brewster angle and the angle of refraction is \(\pi/2\) for:</p>
+<ol type="a"><li>perpendicular polarization \((\mu_1\ne\mu_2)\), and</li>
+<li>parallel polarization \((\epsilon_1\ne\epsilon_2)\).</li></ol>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p><b class="part">(a)</b> 수직편파, \(\mu_1\ne\mu_2\):</p>
+\[\sin\theta_{B\perp}=\frac{1}{\sqrt{1+(\mu_1/\mu_2)}}\]
+<p class="step">무반사 조건에서</p>
+\[\cos\theta_t=\sqrt{1-\frac{n_1^2}{n_2^2}\sin^2\theta_{B\perp}}=\frac{1}{\sqrt{1+(\mu_1/\mu_2)}}=\sin\theta_{B\perp}\]
+\[\longrightarrow\ \theta_t+\theta_{B\perp}=\frac{\pi}{2}\quad\blacksquare\]
+<hr>
+<p><b class="part">(b)</b> 평행편파, \(\epsilon_1\ne\epsilon_2\):</p>
+\[\sin\theta_{B\parallel}=\frac{1}{\sqrt{1+(\epsilon_1/\epsilon_2)}}\]
+\[\cos\theta_t=\sqrt{1-\frac{n_1^2}{n_2^2}\sin^2\theta_{B\parallel}}=\frac{1}{\sqrt{1+(\epsilon_1/\epsilon_2)}}=\sin\theta_{B\parallel}\]
+\[\longrightarrow\ \theta_t+\theta_{B\parallel}=\frac{\pi}{2}\quad\blacksquare\]
+</div></article>
+
+<article data-n="7-33" data-g="7" data-t="임계각과 브루스터각의 관계">
+<div class="card"><div class="q">
+<p>For an incident wave with parallel polarization, find the relation between the critical angle \(\theta_c\) and the Brewster angle \(\theta_{B\parallel}\) for two contiguous media of equal permeability.</p>
+</div></div>
+<div class="s" hidden><div class="s-h"><span>풀이</span><button class="hide" type="button">닫기</button></div>
+<p class="step">투자율이 같고 유전율이 \(\epsilon_1,\epsilon_2\)인 두 매질에서</p>
+\[\text{Eq.(7-120):}\quad\theta_c=\sin^{-1}\sqrt{\epsilon_2/\epsilon_1}\]
+\[\text{Eq.(7-164):}\quad\theta_{B\parallel}=\tan^{-1}\sqrt{\epsilon_2/\epsilon_1}\]
+<p class="step">따라서</p>
+\[\boxed{\ \sin\theta_c=\tan\theta_{B\parallel}\ }\]
+<div class="tbl"><table>
+<tr><th>ε₁/ε₂</th><th>θ<sub>c</sub></th><th>θ<sub>B∥</sub></th></tr>
+<tr><td>0</td><td>&mdash;</td><td>90°</td></tr>
+<tr><td>0.5</td><td>&mdash;</td><td>54.7°</td></tr>
+<tr><td>1</td><td>90°</td><td>45°</td></tr>
+<tr><td>2</td><td>45°</td><td>35.3°</td></tr>
+<tr><td>4</td><td>30°</td><td>26.6°</td></tr>
+<tr><td>8</td><td>20.7°</td><td>19.5°</td></tr>
+<tr><td>10</td><td>18.4°</td><td>17.6°</td></tr>
+</table></div>
+<div class="note">\(\epsilon_1&lt;\epsilon_2\)이면 임계각이 존재하지 않습니다(표의 0, 0.5행). 전반사는 <b>밀한 매질 → 성긴 매질</b>일 때만 생깁니다.</div>
+</div></article>
+
+</div>
+</main>
+
+<div id="bottombar">
+  <div class="tabs2" id="tabs2">
+    <button type="button" data-v="list"><i>&#9776;</i><span>문제</span></button>
+    <button type="button" data-v="imp"><i>&#9733;</i><span>중요</span></button>
+    <button type="button" data-v="guide"><i>&#8721;</i><span>공식</span></button>
+  </div>
+  <nav id="navbar2">
+    <button class="nav-side" id="prev" type="button" aria-label="이전 문제">&#8249;</button>
+    <button class="nav-mark" id="mark" type="button"><span class="dot"></span><span id="markt">복습 완료</span></button>
+    <button class="nav-side" id="next" type="button" aria-label="다음 문제">&#8250;</button>
+  </nav>
+</div>
+
+<script>
+window.MathJax={
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},
+  svg:{fontCache:'local',scale:0.98},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre']},
+  startup:{typeset:false}
+};
+</script>
+<script src="tex-svg.js" id="MathJax-script" async></script>
+<script>
+(function(){
+'use strict';
+var GROUPS=[
+  {id:'1',name:'파동방정식 · TEM · 도플러'},
+  {id:'2',name:'편광'},
+  {id:'3',name:'손실매질 · 표피효과'},
+  {id:'4',name:'전력 · 포인팅 벡터'},
+  {id:'5',name:'수직 입사'},
+  {id:'6',name:'사입사 · 전리층'},
+  {id:'7',name:'전반사 · 브루스터각'}
+];
+var KEY='cheng7.done.v1';
+var arts=[].slice.call(document.querySelectorAll('article'));
+arts.sort(function(a,b){
+  return (+a.dataset.n.split('-')[1])-(+b.dataset.n.split('-')[1]);
+});
+var listEl=document.getElementById('list');
+var detEl=document.getElementById('detail');
+var backEl=document.getElementById('back');
+var ttlEl=document.getElementById('ttl');
+var cntEl=document.getElementById('cnt');
+var progEl=document.getElementById('prog');
+var prevEl=document.getElementById('prev');
+var nextEl=document.getElementById('next');
+var markEl=document.getElementById('mark');
+var marktEl=document.getElementById('markt');
+var guideEl=document.getElementById('guide');
+var mainEl=document.querySelector('main');
+var tabsEl=document.getElementById('tabs2');
+var navEl=document.getElementById('navbar2');
+var cur=-1, typeset={};
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+var done=load();
+
+/* ---- 태그 · 정렬 · 세션 ---- */
+var TKEY='cheng7.tags.v1', SKEY='cheng7.sess.v1';
+function lj(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
+function sj(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var tags=lj(TKEY,{});
+var sess=lj(SKEY,{});
+var sortMode=sess.sort||'group';
+var filtMode=sess.filt||'all';
+var ctrlEl=document.getElementById('ctrls');
+
+function tg(n){ return tags[n]||{}; }
+function setTag(n,k){
+  var t=tags[n]||{};
+  if(t[k]) delete t[k]; else t[k]=1;
+  if(Object.keys(t).length) tags[n]=t; else delete tags[n];
+  sj(TKEY,tags);
+}
+function counts(){
+  var c={all:arts.length,imp:0,todo:0};
+  arts.forEach(function(a){
+    var n=a.dataset.n;
+    if(tg(n).imp) c.imp++;
+    if(!done[n]) c.todo++;
+  });
+  return c;
+}
+function passes(a){
+  var n=a.dataset.n, t=tg(n);
+  if(filtMode==='imp')  return !!t.imp;
+  if(filtMode==='todo') return !done[n];
+  return true;
+}
+function saveSess(extra){
+  var o={view:sess.view||'list',cur:sess.cur,sort:sortMode,filt:filtMode,
+         scroll:mainEl?mainEl.scrollTop:0};
+  if(extra) for(var k in extra) o[k]=extra[k];
+  sess=o; sj(SKEY,o);
+}
+
+/* ---- 컨트롤 바 ---- */
+function buildCtrls(){
+  var c=counts();
+  ctrlEl.innerHTML=
+    '<div class="seg" id="sortSeg">'+
+      '<button type="button" data-s="group">주제별</button>'+
+      '<button type="button" data-s="num">번호순</button>'+
+    '</div>'+
+    '<div class="seg" id="filtSeg">'+
+      '<button type="button" data-f="all">전체<span class="n">'+c.all+'</span></button>'+
+      '<button type="button" data-f="imp">★<span class="n">'+c.imp+'</span></button>'+
+      '<button type="button" data-f="todo">미완료<span class="n">'+c.todo+'</span></button>'+
+    '</div>';
+  [].forEach.call(ctrlEl.querySelectorAll('#sortSeg button'),function(b){
+    b.classList.toggle('on',b.dataset.s===sortMode);
+    b.addEventListener('click',function(){ sortMode=b.dataset.s; saveSess(); buildList(); });
+  });
+  [].forEach.call(ctrlEl.querySelectorAll('#filtSeg button'),function(b){
+    b.classList.toggle('on',b.dataset.f===filtMode);
+    b.addEventListener('click',function(){ filtMode=b.dataset.f; saveSess(); buildList(); });
+  });
+}
+
+/* ---- 한 줄 ---- */
+function rowFor(a){
+  var i=arts.indexOf(a), n=a.dataset.n, t=tg(n);
+  var b=document.createElement('button');
+  b.type='button'; b.className='row'; b.dataset.i=i;
+  if(a.dataset.nosol) b.classList.add('nosol');
+  if(done[n]) b.classList.add('done');
+  b.innerHTML='<span class="star'+(t.imp?' on':'')+'" title="중요 표시">\u2605</span>'+
+    '<span class="num"></span><span class="t"></span><span class="dot"></span>';
+  b.querySelector('.num').textContent=n;
+  b.querySelector('.t').textContent=a.dataset.t;
+  b.addEventListener('click',function(e){
+    if(e.target.classList.contains('star')){
+      e.preventDefault(); e.stopPropagation();
+      setTag(n,'imp'); buildList(); return;
+    }
+    open(i);
+  });
+  return b;
+}
+
+/* ---- 목록 ---- */
+function buildList(){
+  buildCtrls();
+  listEl.innerHTML='';
+  var shown=arts.filter(passes);
+  if(!shown.length){
+    listEl.innerHTML='<div class="empty">해당하는 문제가 없습니다.</div>';
+  } else if(sortMode==='num'){
+    var sec=document.createElement('section'); sec.className='grp';
+    var h=document.createElement('div'); h.className='grp-h';
+    h.innerHTML='<b>번호순</b><span>'+shown.length+'문제</span>';
+    sec.appendChild(h);
+    var rows=document.createElement('div'); rows.className='rows';
+    shown.forEach(function(a){ rows.appendChild(rowFor(a)); });
+    sec.appendChild(rows); listEl.appendChild(sec);
+  } else {
+    GROUPS.forEach(function(g){
+      var mine=shown.filter(function(a){return a.dataset.g===g.id;});
+      if(!mine.length) return;
+      var sec=document.createElement('section'); sec.className='grp';
+      var h=document.createElement('div'); h.className='grp-h';
+      h.innerHTML='<b></b><span></span>';
+      h.querySelector('b').textContent=g.name;
+      h.querySelector('span').textContent=mine.length+'문제';
+      sec.appendChild(h);
+      var rows=document.createElement('div'); rows.className='rows';
+      mine.forEach(function(a){ rows.appendChild(rowFor(a)); });
+      sec.appendChild(rows); listEl.appendChild(sec);
+    });
+  }
+  var n=arts.filter(function(a){return done[a.dataset.n];}).length;
+  cntEl.textContent=n+' / '+arts.length;
+  progEl.style.width=(n/arts.length*100)+'%';
+}
+function refreshRows(){ buildList(); }
+
+/* ---- detail ---- */
+function open(i){
+  if(cur>=0) arts[cur].classList.remove('on');
+  cur=i;
+  var a=arts[i];
+  a.classList.add('on');
+  listEl.classList.add('off');
+  guideEl.classList.remove('on');
+  detEl.classList.add('on');
+  backEl.style.display='flex';
+  tabsEl.style.display='none';
+  ctrlEl.classList.remove('on');
+  tabsEl.classList.add('off'); navEl.classList.add('on');
+  ttlEl.innerHTML='<small>Cheng &middot; Problem</small>'+a.dataset.t;
+  saveSess({view:'detail',cur:i,scroll:0});
+  prevEl.disabled=(i===0); nextEl.disabled=(i===arts.length-1);
+  syncMark();
+  if(mainEl) mainEl.scrollTop=0;
+  if(!typeset[i] && window.MathJax && window.MathJax.typesetPromise){
+    typeset[i]=1;
+    window.MathJax.typesetPromise([a]).catch(function(){});
+  } else if(!typeset[i]){
+    var t=setInterval(function(){
+      if(window.MathJax&&window.MathJax.typesetPromise){
+        clearInterval(t); typeset[i]=1;
+        window.MathJax.typesetPromise([a]).catch(function(){});
+      }
+    },120);
+  }
+}
+function close(){ view('list'); }
+function syncMark(){
+  var on=!!done[arts[cur].dataset.n];
+  markEl.classList.toggle('done',on);
+  marktEl.textContent=on?'복습 완료':'복습 완료로 표시';
+}
+
+backEl.addEventListener('click',close);
+prevEl.addEventListener('click',function(){if(cur>0)open(cur-1);});
+nextEl.addEventListener('click',function(){if(cur<arts.length-1)open(cur+1);});
+markEl.addEventListener('click',function(){
+  var n=arts[cur].dataset.n;
+  if(done[n]) delete done[n]; else done[n]=1;
+  save(done); syncMark(); refreshRows();
+});
+
+/* ---- reveal buttons ---- */
+arts.forEach(function(a){
+  var s=a.querySelector('.s');
+  var btn=document.createElement('button');
+  btn.type='button'; btn.className='reveal';
+  btn.textContent=a.dataset.nosol?'해답 수록 여부 확인':'풀이 보기';
+  a.querySelector('.card').after(btn);
+  btn.addEventListener('click',function(){
+    s.hidden=false; btn.hidden=true;
+    s.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+  a.querySelector('.hide').addEventListener('click',function(){
+    s.hidden=true; btn.hidden=false;
+    a.scrollIntoView({block:'start',behavior:'smooth'});
+  });
+});
+
+/* ---- tabs ---- */
+var gTypeset=false;
+function view(v){
+  if(cur>=0){arts[cur].classList.remove('on'); cur=-1;}
+  detEl.classList.remove('on');
+  backEl.style.display='none';
+  tabsEl.classList.remove('off'); navEl.classList.remove('on');
+  var isList=(v==='list'||v==='imp');
+  if(v==='imp'){ filtMode='imp'; } else if(v==='list' && filtMode==='imp'){ filtMode='all'; }
+  listEl.classList.toggle('off',!isList);
+  guideEl.classList.toggle('on',v==='guide');
+  [].forEach.call(tabsEl.querySelectorAll('button'),function(t){
+    t.classList.toggle('on',t.dataset.v===v);
+  });
+  ctrlEl.classList.toggle('on',isList);
+  saveSess({view:v,cur:-1,scroll:0});
+  ttlEl.innerHTML=(v==='guide')
+    ?'<small>Cheng &middot; Ch.7</small>공식과 개념 정리'
+    :(v==='imp'?'<small>Cheng &middot; Ch.7</small>중요 표시한 문제'
+               :'<small>Cheng &middot; Ch.7</small>Plane Electromagnetic Waves');
+  cntEl.style.display=(v==='guide')?'none':'';
+  if(isList) buildList();
+  if(v==='guide'&&!gTypeset){
+    gTypeset=true;
+    var go=function(){window.MathJax.typesetPromise([guideEl]).catch(function(){});};
+    if(window.MathJax&&window.MathJax.typesetPromise){go();}
+    else{var t=setInterval(function(){
+      if(window.MathJax&&window.MathJax.typesetPromise){clearInterval(t);go();}
+    },120);}
+  }
+  if(mainEl) mainEl.scrollTop=0;
+}
+[].forEach.call(tabsEl.querySelectorAll('button'),function(t){
+  t.addEventListener('click',function(){view(t.dataset.v);});
+});
+
+/* ---- 세션 복원 ---- */
+(function restore(){
+  buildList();
+  var v=sess.view||'list';
+  if(v==='detail' && typeof sess.cur==='number' && sess.cur>=0 && sess.cur<arts.length){
+    open(sess.cur);
+    setTimeout(function(){ if(mainEl) mainEl.scrollTop=sess.scroll||0; },60);
+  } else {
+    view(v==='guide'?'guide':(v==='imp'?'imp':'list'));
+    setTimeout(function(){ if(mainEl) mainEl.scrollTop=sess.scroll||0; },60);
+  }
+})();
+
+var st=null;
+if(mainEl) mainEl.addEventListener('scroll',function(){
+  clearTimeout(st); st=setTimeout(function(){ saveSess(); },260);
+},{passive:true});
+window.addEventListener('beforeunload',function(){ saveSess(); });
+})();
+</script>
+
+<script>
+/* ---------- 숲 배경: 확대한 원본이 아주 천천히 흐른다 ---------- */
+(function(){
+"use strict";
+var ph=document.getElementById('photo'); if(!ph) return;
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* 주기를 서로 안 떨어지게 잡아 패턴이 반복돼 보이지 않게 한다 */
+var Z0=1.24, ZA=0.055, ZW=2*Math.PI/150;   /* 확대   150초 주기 */
+var XA=0.035,            XW=2*Math.PI/97;  /* 좌우    97초 */
+var YA=0.028,            YW=2*Math.PI/181; /* 상하   181초 */
+
+function frame(t){
+  var mn=document.querySelector('main');
+  var sc=mn?mn.scrollTop:0;
+  var W=window.innerWidth, H=window.innerHeight;
+  var z =Z0+ZA*Math.sin(t*ZW);
+  var dx=XA*W*Math.sin(t*XW);
+  var dy=YA*H*Math.sin(t*YW)-sc*0.055;
+  ph.style.transform='translate3d('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px,0) scale('+z.toFixed(4)+')';
+}
+
+var t0=null,raf=null,running=true;
+function loop(ts){ if(!running)return; if(t0===null)t0=ts; frame((ts-t0)/1000); raf=requestAnimationFrame(loop); }
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){running=false; if(raf)cancelAnimationFrame(raf); raf=null;}
+  else if(!reduce){ t0=null; running=true; raf=requestAnimationFrame(loop); }
+});
+frame(0);
+if(!reduce) raf=requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+/* ---------- 서비스 워커: 한 번 열면 그다음부터 오프라인 ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+/* 홈 화면 앱에서 외부 링크가 Safari 로 튀는 것 방지 */
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a[href^="http"]');
+  if(a&&window.navigator.standalone){ e.preventDefault(); window.open(a.href,'_blank'); }
+});
+</script>
+</body>
+</html>

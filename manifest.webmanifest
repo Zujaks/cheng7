@@ -1,0 +1,17 @@
+{
+  "name": "Cheng 평면파 문제집",
+  "short_name": "Cheng 7",
+  "description": "Cheng 전자기학 7장 Plane Electromagnetic Waves 문제 33선",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1b2e22",
+  "theme_color": "#1b2e22",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-192.png",  "sizes": "192x192",   "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "any" },
+    { "src": "icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ]
+}
