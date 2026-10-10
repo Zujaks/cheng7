@@ -65,7 +65,7 @@ body{
 
 /* ---------- forest backdrop ---------- */
 #scrim{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
-#photo{position:fixed; inset:-10%; z-index:0; pointer-events:none;
+#photo{position:fixed; inset:0; z-index:0; pointer-events:none;
   background-image:url(forest.jpg); background-size:cover; background-position:center 44%;
   filter:saturate(.92) contrast(1.02);
   transform:translate3d(0,0,0) scale(1.24); will-change:transform}
@@ -388,7 +388,8 @@ nav button:active{background:color-mix(in srgb,var(--surface) 30%,transparent)}
 
 /* ===== 앱 셸 — 문서가 아니라 앱처럼 ===== */
 html{height:100%}
-body{height:100%; overflow:hidden; display:flex; flex-direction:column}
+body{position:fixed; top:0; right:0; bottom:0; left:0; height:100%; height:100dvh;
+  overflow:hidden; display:flex; flex-direction:column}
 header{flex:none; position:static}
 main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
@@ -415,6 +416,55 @@ main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:to
 #navbar2{display:none; align-items:center; gap:8px}
 #navbar2.on{display:flex}
 .tabs2.off{display:none}
+
+/* ===== 하단바 또렷하게 ===== */
+#bottombar{padding:6px 10px calc(5px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--ground) 60%,transparent);
+  backdrop-filter:blur(24px) saturate(175%);
+  -webkit-backdrop-filter:blur(24px) saturate(175%);
+  border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+main{padding-bottom:84px}
+.tabs2 button{padding:6px 2px 4px; font-size:10.5px; color:color-mix(in srgb,var(--ink) 48%,transparent)}
+.tabs2 button i{font-size:19px}
+.tabs2 button.on{color:var(--sage-on); font-weight:700}
+
+/* ===== 풀이: 닫기를 위에 붙여 둔다 ===== */
+.s-h{position:sticky; top:-16px; z-index:3; margin:-16px -15px 12px; padding:14px 15px 10px;
+  background:color-mix(in srgb,var(--surface) 62%,transparent);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);
+  border-radius:12px 12px 0 0}
+.hide{padding:4px 10px; border-radius:7px; border:1px solid color-mix(in srgb,var(--ink) 18%,transparent)}
+.reveal.open{background:linear-gradient(158deg,
+  color-mix(in srgb,var(--sage) 22%,transparent) 0%,
+  color-mix(in srgb,var(--sage) 12%,transparent) 48%,
+  color-mix(in srgb,var(--sage) 18%,transparent) 100%)}
+
+/* ===== 설정 ===== */
+#settings{display:none}
+#settings.on{display:block}
+.sect{margin:0 0 22px}
+.sect>h3{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 9px; padding:0 2px;
+  text-shadow:0 1px 4px var(--ground),0 0 12px var(--ground)}
+.bgs{display:grid; grid-template-columns:repeat(3,1fr); gap:9px}
+.bgs button{all:unset; cursor:pointer; position:relative; aspect-ratio:3/4.2;
+  border-radius:12px; overflow:hidden; background-size:cover; background-position:center;
+  border:2px solid transparent; box-shadow:0 2px 10px var(--gl-cast)}
+.bgs button.on{border-color:var(--sage-on)}
+.bgs button span{position:absolute; left:0; right:0; bottom:0; padding:16px 6px 5px;
+  font-size:11.5px; font-weight:600; text-align:center; color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.62),transparent)}
+.bgs button.none{background:color-mix(in srgb,var(--surface) 40%,transparent);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
+.bgs button.none span{color:var(--ink); background:none}
+.danger{all:unset; cursor:pointer; display:block; width:100%; box-sizing:border-box;
+  text-align:center; padding:13px; border-radius:12px; font-size:14.5px; font-weight:500;
+  color:var(--warn); border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);
+  background:color-mix(in srgb,var(--warn-soft) 34%,transparent);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
+.setnote{font-size:13px; color:var(--ink-2); margin:9px 2px 0; line-height:1.55;
+  text-shadow:0 1px 4px var(--ground)}
 </style>
 
 <div id="photo" aria-hidden="true"></div>
@@ -590,6 +640,8 @@ main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:to
 </section>
 
 </div>
+
+<div id="settings"></div>
 
 <div id="detail">
 <!-- ============ 1. 파동방정식 · TEM · 도플러 ============ -->
@@ -1255,6 +1307,7 @@ main{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:to
     <button type="button" data-v="list"><i>&#9776;</i><span>문제</span></button>
     <button type="button" data-v="imp"><i>&#9733;</i><span>중요</span></button>
     <button type="button" data-v="guide"><i>&#8721;</i><span>공식</span></button>
+    <button type="button" data-v="set"><i>&#9881;</i><span>설정</span></button>
   </div>
   <nav id="navbar2">
     <button class="nav-side" id="prev" type="button" aria-label="이전 문제">&#8249;</button>
@@ -1318,6 +1371,60 @@ var sess=lj(SKEY,{});
 var sortMode=sess.sort||'group';
 var filtMode=sess.filt||'all';
 var ctrlEl=document.getElementById('ctrls');
+var setEl=document.getElementById('settings');
+
+/* ---- 배경 ---- */
+var BGS=[
+  {k:'forest', n:'\uc232',       f:'forest.jpg'},
+  {k:'night',  n:'\ubc24\ud558\ub298', f:'bg-night.jpg'},
+  {k:'sea',    n:'\ubc14\ub2e4',   f:'bg-sea.jpg'},
+  {k:'sunset', n:'\ub178\uc744',   f:'bg-sunset.jpg'},
+  {k:'mist',   n:'\uc548\uac1c \uc0b0', f:'bg-mist.jpg'},
+  {k:'none',   n:'\uc5c6\uc74c',   f:null}
+];
+var BKEY='cheng7.bg.v1';
+function curBG(){ try{ return localStorage.getItem(BKEY)||'forest'; }catch(e){ return 'forest'; } }
+function applyBG(k){
+  var ph=document.getElementById('photo'); if(!ph) return;
+  var b=null; for(var i=0;i<BGS.length;i++) if(BGS[i].k===k) b=BGS[i];
+  if(!b) b=BGS[0];
+  if(b.f){ ph.style.backgroundImage='url('+b.f+')'; ph.style.display='block'; }
+  else   { ph.style.backgroundImage='none'; ph.style.display='none'; }
+  try{ localStorage.setItem(BKEY,b.k); }catch(e){}
+}
+function buildSettings(){
+  var cur=curBG();
+  var html='<div class="sect"><h3>\ubc30\uacbd</h3><div class="bgs">';
+  BGS.forEach(function(b){
+    html+='<button type="button" data-k="'+b.k+'"'+
+          (b.k===cur?' class="on'+(b.f?'':' none')+'"':(b.f?'':' class="none"'))+
+          (b.f?' style="background-image:url('+b.f+')"':'')+
+          '><span>'+b.n+'</span></button>';
+  });
+  html+='</div><p class="setnote">\uace0\ub978 \ubc30\uacbd\uc740 \uc774 \uae30\uae30\uc5d0\ub9cc \uc800\uc7a5\ub429\ub2c8\ub2e4.</p></div>'+
+        '<div class="sect"><h3>\uc9c4\ub3c4</h3>'+
+        '<button type="button" class="danger" id="wipe">\ubcc4 \ud45c\uc2dc\u00b7\ubcf5\uc2b5 \uc644\ub8cc \uc804\ubd80 \uc9c0\uc6b0\uae30</button>'+
+        '<p class="setnote" id="wipeinfo"></p></div>';
+  setEl.innerHTML=html;
+  [].forEach.call(setEl.querySelectorAll('.bgs button'),function(b){
+    b.addEventListener('click',function(){
+      applyBG(b.dataset.k);
+      [].forEach.call(setEl.querySelectorAll('.bgs button'),function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+    });
+  });
+  var c=counts();
+  setEl.querySelector('#wipeinfo').textContent=
+    '\ud604\uc7ac \ubcc4 '+c.imp+'\uac1c, \ubcf5\uc2b5 \uc644\ub8cc '+(arts.length-c.todo)+'\uac1c';
+  var wipe=setEl.querySelector('#wipe'), armed=false;
+  wipe.addEventListener('click',function(){
+    if(!armed){ armed=true; wipe.textContent='\uc815\ub9d0 \uc9c0\uc6b8\uae4c\uc694? \ud55c \ubc88 \ub354 \ub204\ub974\uc138\uc694';
+      setTimeout(function(){ if(armed){armed=false; wipe.textContent='\ubcc4 \ud45c\uc2dc\u00b7\ubcf5\uc2b5 \uc644\ub8cc \uc804\ubd80 \uc9c0\uc6b0\uae30';} },4000);
+      return; }
+    tags={}; done={}; sj(TKEY,tags); save(done);
+    buildList(); buildSettings();
+  });
+}
 
 function tg(n){ return tags[n]||{}; }
 function setTag(n,k){
@@ -1476,18 +1583,25 @@ markEl.addEventListener('click',function(){
 
 /* ---- reveal buttons ---- */
 arts.forEach(function(a){
-  var s=a.querySelector('.s');
+  var sol=a.querySelector('.s');
+  var label=a.dataset.nosol?'해답 수록 여부 확인':'풀이 보기';
   var btn=document.createElement('button');
   btn.type='button'; btn.className='reveal';
-  btn.textContent=a.dataset.nosol?'해답 수록 여부 확인':'풀이 보기';
+  btn.textContent=label;
   a.querySelector('.card').after(btn);
+  function set(open){
+    sol.hidden=!open;
+    btn.textContent=open?'풀이 닫기':label;
+    btn.classList.toggle('open',open);
+  }
   btn.addEventListener('click',function(){
-    s.hidden=false; btn.hidden=true;
-    s.scrollIntoView({block:'nearest',behavior:'smooth'});
+    var opening=sol.hidden;
+    set(opening);
+    if(opening) sol.scrollIntoView({block:'nearest',behavior:'smooth'});
+    else a.scrollIntoView({block:'start',behavior:'smooth'});
   });
   a.querySelector('.hide').addEventListener('click',function(){
-    s.hidden=true; btn.hidden=false;
-    a.scrollIntoView({block:'start',behavior:'smooth'});
+    set(false); a.scrollIntoView({block:'start',behavior:'smooth'});
   });
 });
 
@@ -1499,9 +1613,12 @@ function view(v){
   backEl.style.display='none';
   tabsEl.classList.remove('off'); navEl.classList.remove('on');
   var isList=(v==='list'||v==='imp');
+  setEl.classList.toggle('on',v==='set');
+  if(v==='set') buildSettings();
   if(v==='imp'){ filtMode='imp'; } else if(v==='list' && filtMode==='imp'){ filtMode='all'; }
   listEl.classList.toggle('off',!isList);
   guideEl.classList.toggle('on',v==='guide');
+  detEl.classList.remove('on');
   [].forEach.call(tabsEl.querySelectorAll('button'),function(t){
     t.classList.toggle('on',t.dataset.v===v);
   });
@@ -1510,8 +1627,9 @@ function view(v){
   ttlEl.innerHTML=(v==='guide')
     ?'<small>Cheng &middot; Ch.7</small>공식과 개념 정리'
     :(v==='imp'?'<small>Cheng &middot; Ch.7</small>중요 표시한 문제'
-               :'<small>Cheng &middot; Ch.7</small>Plane Electromagnetic Waves');
-  cntEl.style.display=(v==='guide')?'none':'';
+     :(v==='set'?'<small>Cheng &middot; Ch.7</small>설정'
+               :'<small>Cheng &middot; Ch.7</small>Plane Electromagnetic Waves'));
+  cntEl.style.display=(v==='guide'||v==='set')?'none':'';
   if(isList) buildList();
   if(v==='guide'&&!gTypeset){
     gTypeset=true;
@@ -1527,6 +1645,15 @@ function view(v){
   t.addEventListener('click',function(){view(t.dataset.v);});
 });
 
+/* ---- 하단바 높이만큼만 비운다 (빈 공간 방지) ---- */
+function fitBottom(){
+  var bb=document.getElementById('bottombar');
+  if(bb&&mainEl) mainEl.style.paddingBottom=(bb.offsetHeight+10)+'px';
+}
+window.addEventListener('resize',fitBottom);
+window.addEventListener('orientationchange',function(){ setTimeout(fitBottom,120); });
+fitBottom(); setTimeout(fitBottom,300); setTimeout(fitBottom,1200);
+
 /* ---- 세션 복원 ---- */
 (function restore(){
   buildList();
@@ -1535,7 +1662,7 @@ function view(v){
     open(sess.cur);
     setTimeout(function(){ if(mainEl) mainEl.scrollTop=sess.scroll||0; },60);
   } else {
-    view(v==='guide'?'guide':(v==='imp'?'imp':'list'));
+    view(['guide','imp','set'].indexOf(v)>=0?v:'list');
     setTimeout(function(){ if(mainEl) mainEl.scrollTop=sess.scroll||0; },60);
   }
 })();
@@ -1553,6 +1680,10 @@ window.addEventListener('beforeunload',function(){ saveSess(); });
 (function(){
 "use strict";
 var ph=document.getElementById('photo'); if(!ph) return;
+try{ var saved=localStorage.getItem('cheng7.bg.v1');
+  if(saved){ var m={forest:'forest.jpg',night:'bg-night.jpg',sea:'bg-sea.jpg',sunset:'bg-sunset.jpg',mist:'bg-mist.jpg'};
+    if(saved==='none'){ ph.style.display='none'; } else if(m[saved]){ ph.style.backgroundImage='url('+m[saved]+')'; } }
+}catch(e){}
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* 주기를 서로 안 떨어지게 잡아 패턴이 반복돼 보이지 않게 한다 */
@@ -1582,13 +1713,9 @@ if(!reduce) raf=requestAnimationFrame(loop);
 </script>
 
 <script>
-/* ---------- 서비스 워커: 한 번 열면 그다음부터 오프라인 ---------- */
 if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
-/* 홈 화면 앱에서 외부 링크가 Safari 로 튀는 것 방지 */
 document.addEventListener('click',function(e){
   var a=e.target.closest&&e.target.closest('a[href^="http"]');
   if(a&&window.navigator.standalone){ e.preventDefault(); window.open(a.href,'_blank'); }
