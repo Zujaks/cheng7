@@ -1950,10 +1950,12 @@ function walkNode(){
   return wEl;
 }
 
-/* 하단바와 같은 기준으로 레터박스 위에 발을 붙인다 */
+/* 화면 맨 아래에 바짝 붙인다.
+   레터박스가 걸린 기기는 웹뷰 맨 아랫줄이 곧 띠의 윗선이라 0 이면 딱 맞고,
+   전체화면(cover)에선 홈 인디케이터에 깔리지 않을 만큼만 띄운다. */
 function walkBottom(){
   var sa=saInset();
-  return (sa.cover ? sa.b+3 : Math.max(2, Math.round(sa.b*0.3)+3))+'px';
+  return (sa.cover ? Math.round(sa.b*0.35) : 0)+'px';
 }
 
 function walkOnce(){
