@@ -523,6 +523,76 @@ main{padding-bottom:84px}
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
 .setnote{font-size:13px; color:var(--ink-2); margin:9px 2px 0; line-height:1.55;
   text-shadow:0 1px 4px var(--ground)}
+
+/* ===== 하단바를 없애고 떠 있는 원형 유리 버튼으로 ===== */
+#bottombar{
+  background:none; backdrop-filter:none; -webkit-backdrop-filter:none;
+  border-top:0; pointer-events:none;
+  padding:0 14px calc(10px + env(safe-area-inset-bottom));
+}
+#bottombar > *{pointer-events:auto}
+
+.tabs2{display:flex; gap:13px; justify-content:center}
+.tabs2 button{
+  all:unset; cursor:pointer; flex:none;
+  width:52px; height:52px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:color-mix(in srgb,var(--ink) 62%,transparent);
+  border:1px solid var(--gl-edge);
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--surface) var(--pa1),transparent) 0%,
+    color-mix(in srgb,var(--surface) var(--pa2),transparent) 50%,
+    color-mix(in srgb,var(--surface) var(--pa3),transparent) 100%);
+  backdrop-filter:blur(12px) saturate(185%) brightness(1.05) contrast(1.05);
+  -webkit-backdrop-filter:blur(12px) saturate(185%) brightness(1.05) contrast(1.05);
+  box-shadow:inset 0 1px 0 var(--gl-hi),
+             inset 1px 0 0 color-mix(in srgb,var(--gl-hi) 45%,transparent),
+             inset 0 -1px 0 var(--gl-lo),
+             0 2px 5px var(--gl-cast), 0 10px 24px var(--gl-cast);
+  transition:transform .13s ease;
+}
+.tabs2 button span{display:none}          /* 한글 라벨 제거 — 기호만 */
+.tabs2 button i{width:22px; height:22px; display:block}
+.tabs2 button i svg{width:100%; height:100%; display:block}
+.tabs2 button:active{transform:scale(.93)}
+.tabs2 button.on{
+  color:var(--gl-on);
+  border-color:color-mix(in srgb,var(--sage) 58%,transparent);
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--sage) 44%,transparent) 0%,
+    color-mix(in srgb,var(--sage) 26%,transparent) 50%,
+    color-mix(in srgb,var(--sage) 38%,transparent) 100%);
+}
+.tabs2 button.on i svg{stroke-width:2.1}
+.tabs2 button:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+/* 문제 상세의 이전 · 복습완료 · 다음도 같은 유리로 */
+nav{gap:13px}
+nav button{height:52px; border-radius:26px; box-shadow:none}
+.nav-side{
+  width:52px; flex:none; border-radius:50%; font-size:21px;
+  color:color-mix(in srgb,var(--ink) 62%,transparent);
+  border:1px solid var(--gl-edge); text-shadow:none;
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--surface) var(--pa1),transparent) 0%,
+    color-mix(in srgb,var(--surface) var(--pa2),transparent) 50%,
+    color-mix(in srgb,var(--surface) var(--pa3),transparent) 100%);
+  backdrop-filter:blur(12px) saturate(185%) brightness(1.05) contrast(1.05);
+  -webkit-backdrop-filter:blur(12px) saturate(185%) brightness(1.05) contrast(1.05);
+  box-shadow:inset 0 1px 0 var(--gl-hi),
+             inset 0 -1px 0 var(--gl-lo),
+             0 2px 5px var(--gl-cast), 0 10px 24px var(--gl-cast);
+}
+.nav-side:active{background:color-mix(in srgb,var(--surface) 34%,transparent)}
+.nav-mark{border-radius:26px}
+
+/* 어두운 배경에서는 원형 버튼도 광학 보정을 끈다 */
+:root[data-bg="night"] .tabs2 button, :root[data-bg="sunset"] .tabs2 button,
+:root[data-bg="night"] .nav-side,     :root[data-bg="sunset"] .nav-side{
+  backdrop-filter:blur(5px) saturate(104%);
+  -webkit-backdrop-filter:blur(5px) saturate(104%);
+  color:color-mix(in srgb,var(--ink) 74%,transparent);
+}
 </style>
 
 <div id="photo" aria-hidden="true"></div>
@@ -1362,10 +1432,10 @@ main{padding-bottom:84px}
 
 <div id="bottombar">
   <div class="tabs2" id="tabs2">
-    <button type="button" data-v="list"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></i><span>문제</span></button>
-    <button type="button" data-v="imp"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.78L12 16.9l-5.2 2.73 1-5.78-4.2-4.1 5.8-.85z"/></svg></i><span>중요</span></button>
-    <button type="button" data-v="guide"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6.5l6 8-6 8H18"/></svg></i><span>공식</span></button>
-    <button type="button" data-v="set"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.3M12 18.9v2.3M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg></i><span>설정</span></button>
+    <button type="button" data-v="list" aria-label="문제 목록" title="문제 목록"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></i><span>문제</span></button>
+    <button type="button" data-v="imp" aria-label="중요 표시" title="중요 표시"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.78L12 16.9l-5.2 2.73 1-5.78-4.2-4.1 5.8-.85z"/></svg></i><span>중요</span></button>
+    <button type="button" data-v="guide" aria-label="공식 정리" title="공식 정리"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6.5l6 8-6 8H18"/></svg></i><span>공식</span></button>
+    <button type="button" data-v="set" aria-label="설정" title="설정"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.3M12 18.9v2.3M4.5 4.5l1.6 1.6M17.9 17.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M4.5 19.5l1.6-1.6M17.9 6.1l1.6-1.6"/></svg></i><span>설정</span></button>
   </div>
   <nav id="navbar2">
     <button class="nav-side" id="prev" type="button" aria-label="이전 문제">&#8249;</button>
@@ -1433,11 +1503,16 @@ var setEl=document.getElementById('settings');
 
 /* ---- 배경 ---- */
 var BGS=[
-  {k:'forest', n:'\uc232',       f:'forest.jpg',   t:'#d0cfc0', b:'#b3bc8d'},
-  {k:'night',  n:'\ubc24\ud558\ub298', f:'bg-night.jpg', t:'#070d20', b:'#0f1730'},
-  {k:'sea',    n:'\ubc14\ub2e4',   f:'bg-sea.jpg',   t:'#bed7dc', b:'#133140'},
-  {k:'sunset', n:'\ub178\uc744',   f:'bg-sunset.jpg',t:'#3d224a', b:'#231820'},
-  {k:'mist',   n:'\uc548\uac1c \uc0b0', f:'bg-mist.jpg',  t:'#d1dae0', b:'#77818a'},
+  {k:'forest', n:'\uc232',       f:'forest.jpg',
+     t:'#d6d6cb', b:'#bec5a1', td:'#3f403f', bd:'#373a31'},
+  {k:'night',  n:'\ubc24\ud558\ub298', f:'bg-night.jpg',
+     t:'#080d1f', b:'#0f162d', td:'#080d1f', bd:'#0f162d'},
+  {k:'sea',    n:'\ubc14\ub2e4',   f:'bg-sea.jpg',
+     t:'#c8dce1', b:'#364e5b', td:'#3c4245', bd:'#080f15'},
+  {k:'sunset', n:'\ub178\uc744',   f:'bg-sunset.jpg',
+     t:'#382045', b:'#21171f', td:'#382045', bd:'#21171f'},
+  {k:'mist',   n:'\uc548\uac1c \uc0b0', f:'bg-mist.jpg',
+     t:'#d8dfe5', b:'#8b939b', td:'#404347', bd:'#25282c'},
   {k:'none',   n:'\uc5c6\uc74c',   f:null}
 ];
 var BKEY='cheng7.bg.v1';
@@ -1455,12 +1530,21 @@ function applyBG(k){
   else R.removeAttribute('data-theme');
   /* iOS 홈화면 앱은 상단 상태바 띠를 theme-color 로, 하단 세이프에어리어를
      html 배경색으로 칠한다. 사진의 위/아래 끝색과 맞춰야 띠가 안 보인다. */
+  var dk = R.getAttribute('data-theme')==='dark' ||
+           (!R.getAttribute('data-theme') &&
+            window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches);
+  var topc = dk ? (b.td||b.t) : b.t;
+  var botc = dk ? (b.bd||b.b) : b.b;
   var tc=document.querySelector('meta[name="theme-color"]');
   if(!tc){ tc=document.createElement('meta'); tc.name='theme-color'; document.head.appendChild(tc); }
-  tc.setAttribute('content', b.t || '#14261a');
-  R.style.background = b.b || '';
-  if(document.body) document.body.style.background = b.b || '';
+  tc.setAttribute('content', topc || (dk?'#0D0F15':'#EFF1F6'));
+  R.style.background = botc || '';
+  if(document.body) document.body.style.background = botc || '';
   try{ localStorage.setItem(BKEY,b.k); }catch(e){}
+}
+if(window.matchMedia){
+  try{ window.matchMedia('(prefers-color-scheme:dark)')
+         .addEventListener('change',function(){ applyBG(curBG()); }); }catch(e){}
 }
 function buildSettings(){
   var cur=curBG();
@@ -1472,6 +1556,8 @@ function buildSettings(){
           '><span>'+b.n+'</span></button>';
   });
   html+='</div><p class="setnote">\uace0\ub978 \ubc30\uacbd\uc740 \uc774 \uae30\uae30\uc5d0\ub9cc \uc800\uc7a5\ub429\ub2c8\ub2e4. \ubc24\ud558\ub298\u00b7\ub178\uc744\uc740 \uc790\ub3d9\uc73c\ub85c \uc5b4\ub461\uac8c \ubc14\ub01d\ub2c8\ub2e4.</p></div>'+
+        '<div class="sect"><h3>\ud654\uba74 \uc9c4\ub2e8</h3>'+
+        '<p class="setnote" id="diag"></p></div>'+
         '<div class="sect"><h3>\uc9c4\ub3c4</h3>'+
         '<button type="button" class="danger" id="wipe">\ubcc4 \ud45c\uc2dc\u00b7\ubcf5\uc2b5 \uc644\ub8cc \uc804\ubd80 \uc9c0\uc6b0\uae30</button>'+
         '<p class="setnote" id="wipeinfo"></p></div>';
@@ -1483,6 +1569,25 @@ function buildSettings(){
       b.classList.add('on');
     });
   });
+  /* viewport-fit=cover 가 실제로 먹었는지 확인용.
+     cover 가 먹으면 inset 이 0 이 아니고 화면높이 == 기기높이 가 된다. */
+  (function(){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;left:0;top:0;width:0;height:0;'+
+      'padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);'+
+      'visibility:hidden';
+    document.body.appendChild(d);
+    var cs=getComputedStyle(d);
+    var t=parseFloat(cs.paddingTop)||0, b=parseFloat(cs.paddingBottom)||0;
+    d.remove();
+    var sa=('standalone' in navigator) ? (navigator.standalone?'\uc608':'\uc544\ub2c8\uc624(\uc0ac\ud30c\ub9ac)') : '-';
+    var vh=Math.round(window.innerHeight), sh=Math.round(screen.height);
+    var cover=(t>0||b>0)&&vh>=sh-2;
+    var e=setEl.querySelector('#diag');
+    if(e) e.innerHTML='\ud648\ud654\uba74 \uc571 '+sa+
+      ' \u00b7 \uc0c1\ub2e8 \uc5ec\ubc31 '+t.toFixed(0)+'px \u00b7 \ud558\ub2e8 \uc5ec\ubc31 '+b.toFixed(0)+'px<br>'+
+      '\ud654\uba74 '+vh+' / \uae30\uae30 '+sh+' \u2192 \uc804\uccb4\ud654\uba74 '+(cover?'\uc801\uc6a9\ub428':'\uc548 \ub428 \u2014 \ud648\ud654\uba74 \uc544\uc774\ucf58 \uc0ad\uc81c \ud6c4 \ub2e4\uc2dc \ucd94\uac00');
+  })();
   var c=counts();
   setEl.querySelector('#wipeinfo').textContent=
     '\ud604\uc7ac \ubcc4 '+c.imp+'\uac1c, \ubcf5\uc2b5 \uc644\ub8cc '+(arts.length-c.todo)+'\uac1c';
