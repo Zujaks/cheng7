@@ -1,9 +1,10 @@
 /* Cheng 7 — 오프라인 캐시 */
-const CACHE = 'cheng7-v18';
+const CACHE = 'cheng7-v26';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './tex-svg.js', './forest.jpg', './toto.png',
   './bg-night.jpg', './bg-sea.jpg', './bg-sunset.jpg', './bg-mist.jpg',
+  './bg-autumn.jpg', './bg-road.jpg', './bg-sky.jpg',
   './icon-192.png', './icon-512.png', './icon-1024.png', './apple-touch-icon.png'
 ];
 
